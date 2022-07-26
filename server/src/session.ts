@@ -10,16 +10,20 @@ import {isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/lan
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import * as lsp from 'vscode-languageserver/node';
+import * as htmlLs from 'vscode-html-languageservice';
+import * as pugLs from '@volar/pug-language-service';
 
 import {ServerOptions} from '../common/initialize';
 import {NgccProgressEnd, OpenOutputChannel, ProjectLanguageService, ProjectLoadingFinish, ProjectLoadingStart, SuggestStrictMode} from '../common/notifications';
 import {GetComponentsWithTemplateFile, GetTcbParams, GetTcbRequest, GetTcbResponse, GetTemplateLocationForComponent, GetTemplateLocationForComponentParams, IsInAngularProject, IsInAngularProjectParams, RunNgccParams, RunNgccRequest} from '../common/requests';
 
-import {readNgCompletionData, tsCompletionEntryToLspCompletionItem} from './completion';
-import {tsDiagnosticToLspDiagnostic} from './diagnostic';
+import {getHtmlCompletions, getPugCompletions, readNgCompletionData, tsCompletionEntryToLspCompletionItem} from './completion';
 import {resolveAndRunNgcc} from './ngcc';
 import {ServerHost} from './server_host';
-import {filePathToUri, getMappedDefinitionInfo, isConfiguredProject, isDebugMode, lspPositionToTsPosition, lspRangeToTsPositions, MruTracker, tsDisplayPartsToText, tsTextSpanToLspRange, uriToFilePath} from './utils';
+import * as utils from './utils/utils';
+import {pugDiagnosticToLspDiagnostic, tsDiagnosticToLspDiagnostic} from './diagnostic';
+const SourceMap = require("@volar/source-map");
+
 
 export interface SessionOptions {
   host: ServerHost;
@@ -59,7 +63,7 @@ export class Session {
   private readonly disableAutomaticNgcc: boolean;
   private readonly configuredProjToExternalProj = new Map<string, string>();
   private readonly logToConsole: boolean;
-  private readonly openFiles = new MruTracker();
+  private readonly openFiles = new utils.MruTracker();
   private readonly includeAutomaticOptionalChainCompletions: boolean;
   private readonly includeCompletionsWithSnippetText: boolean;
   private snippetSupport: boolean|undefined;
@@ -77,6 +81,8 @@ export class Session {
   private renameDisabledProjects: WeakSet<ts.server.Project> = new WeakSet();
   private clientCapabilities: lsp.ClientCapabilities = {};
 
+  private pugLs: pugLs.LanguageService;
+
   constructor(options: SessionOptions) {
     this.includeAutomaticOptionalChainCompletions =
         options.includeAutomaticOptionalChainCompletions;
@@ -91,8 +97,7 @@ export class Session {
       // LSP spec requires every request to send a response back, even if it is
       // cancelled. See
       // https://microsoft.github.io/language-server-protocol/specifications/specification-current/#cancelRequest
-      cancelUndispatched(message: lsp.Message): lsp.ResponseMessage |
-      undefined {
+      cancelUndispatched(message: lsp.Message): lsp.ResponseMessage | undefined {
         return {
           jsonrpc: message.jsonrpc,
           // This ID is just a placeholder to satisfy the ResponseMessage type.
@@ -102,11 +107,13 @@ export class Session {
           id: -1,
           error: new lsp.ResponseError(lsp.LSPErrorCodes.RequestCancelled, 'Request cancelled'),
         };
-      }
+      },
     });
 
     this.addProtocolHandlers(this.connection);
     this.projectService = this.createProjectService(options);
+
+    this.pugLs = pugLs.getLanguageService(htmlLs.getLanguageService())
   }
 
   private createProjectService(options: SessionOptions): ts.server.ProjectService {
@@ -134,6 +141,14 @@ export class Session {
     projSvc.setHostConfiguration({
       formatOptions: projSvc.getHostFormatCodeOptions(),
       extraFileExtensions: [
+        {
+          // TODO: in View Engine getExternalFiles() returns a list of external
+          // templates (HTML files). This configuration is no longer needed in
+          // Ivy because Ivy returns the typecheck files.
+          extension: '.pug',
+          isMixedContent: false,
+          scriptKind: ts.ScriptKind.Unknown,
+        },
         {
           // TODO: in View Engine getExternalFiles() returns a list of external
           // templates (HTML files). This configuration is no longer needed in
@@ -198,7 +213,7 @@ export class Session {
   }
 
   private isInAngularProject(params: IsInAngularProjectParams): boolean|null {
-    const filePath = uriToFilePath(params.textDocument.uri);
+    const filePath = utils.uriToFilePath(params.textDocument.uri);
     if (!filePath) {
       return false;
     }
@@ -224,7 +239,25 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+
+    let offset: number;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      const pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
     const response = languageService.getTcb(scriptInfo.fileName, offset);
     if (response === undefined) {
       return null;
@@ -234,10 +267,23 @@ export class Session {
     if (!tcfScriptInfo) {
       return null;
     }
+
+    let tcfPugDocument: pugLs.PugDocument | null = null;
+    if (tcfScriptInfo.fileName.endsWith('.pug')) {
+      tcfPugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, tcfScriptInfo);
+
+      if (tcfPugDocument.error) {
+        return null;
+      }
+
+    }
+
     return {
-      uri: filePathToUri(tcfName),
+      uri: utils.filePathToUri(tcfName),
       content: response.content,
-      selections: response.selections.map((span => tsTextSpanToLspRange(tcfScriptInfo, span))),
+      selections: response.selections.map((span => {
+        return utils.tsTextSpanToLspRange(tcfPugDocument?.htmlTextDocument || tcfScriptInfo, span)
+      })),
     };
   }
 
@@ -260,7 +306,26 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+
+    let pugDocument;
+    let offset;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
     const documentSpan =
         languageService.getTemplateLocationForComponent(scriptInfo.fileName, offset);
     if (documentSpan === undefined) {
@@ -270,8 +335,18 @@ export class Session {
     if (templateScriptInfo === undefined) {
       return null;
     }
-    const range = tsTextSpanToLspRange(templateScriptInfo, documentSpan.textSpan);
-    return lsp.Location.create(filePathToUri(documentSpan.fileName), range);
+
+    let range;
+    if (pugDocument) {
+      range = utils.translateHtmlRangeToPug(
+        utils.tsTextSpanToLspRange(pugDocument.htmlTextDocument, documentSpan.textSpan),
+        pugDocument
+      );
+    } else {
+      range = utils.tsTextSpanToLspRange(scriptInfo, documentSpan.textSpan);
+    }
+
+    return lsp.Location.create(utils.filePathToUri(documentSpan.fileName), range);
   }
 
   private onGetComponentsWithTemplateFile(params: any): lsp.Location[]|null {
@@ -287,8 +362,12 @@ export class Session {
       if (scriptInfo === undefined) {
         continue;
       }
-      const range = tsTextSpanToLspRange(scriptInfo, documentSpan.textSpan);
-      results.push(lsp.Location.create(filePathToUri(documentSpan.fileName), range));
+      const pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, lsInfo.scriptInfo);
+      const range = utils.translateHtmlRangeToPug(
+        utils.tsTextSpanToLspRange(pugDocument.htmlTextDocument, documentSpan.textSpan),
+        pugDocument
+      );
+      results.push(lsp.Location.create(utils.filePathToUri(documentSpan.fileName), range));
     }
     return results;
   }
@@ -300,7 +379,27 @@ export class Session {
     }
 
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+
+    let offset: number;
+    let pugDocument: pugLs.PugDocument;
+
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+          utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
 
     const help = languageService.getSignatureHelpItems(scriptInfo.fileName, offset, undefined);
     if (help === undefined) {
@@ -313,31 +412,31 @@ export class Session {
       signatures: help.items.map((item: ts.SignatureHelpItem): lsp.SignatureInformation => {
         // For each signature, build up a 'label' which represents the full signature text, as well
         // as a parameter list where each parameter label is a span within the signature label.
-        let label = tsDisplayPartsToText(item.prefixDisplayParts);
+        let label = utils.tsDisplayPartsToText(item.prefixDisplayParts);
         const parameters: lsp.ParameterInformation[] = [];
         let first = true;
         for (const param of item.parameters) {
           if (!first) {
-            label += tsDisplayPartsToText(item.separatorDisplayParts);
+            label += utils.tsDisplayPartsToText(item.separatorDisplayParts);
           }
           first = false;
 
           // Add the parameter to the label, keeping track of its start and end positions.
           const start = label.length;
-          label += tsDisplayPartsToText(param.displayParts);
+          label += utils.tsDisplayPartsToText(param.displayParts);
           const end = label.length;
 
           // The parameter itself uses a range within the signature label as its own label.
           parameters.push({
             label: [start, end],
-            documentation: tsDisplayPartsToText(param.documentation),
+            documentation: utils.tsDisplayPartsToText(param.documentation),
           });
         }
 
-        label += tsDisplayPartsToText(item.suffixDisplayParts);
+        label += utils.tsDisplayPartsToText(item.suffixDisplayParts);
         return {
           label,
-          documentation: tsDisplayPartsToText(item.documentation),
+          documentation: utils.tsDisplayPartsToText(item.documentation),
           parameters,
         };
       }),
@@ -345,12 +444,11 @@ export class Session {
   }
 
   private onCodeLens(params: lsp.CodeLensParams): lsp.CodeLens[]|null {
-    if (!params.textDocument.uri.endsWith('.html') || !this.isInAngularProject(params)) {
+    if (!(params.textDocument.uri.endsWith('.html') || params.textDocument.uri.endsWith('.pug')) || !this.isInAngularProject(params)) {
       return null;
     }
     const position = lsp.Position.create(0, 0);
     const topOfDocument = lsp.Range.create(position, position);
-
 
     const codeLens: lsp.CodeLens = {
       range: topOfDocument,
@@ -425,18 +523,18 @@ export class Session {
     }
     const fileName = project.getRootScriptInfos()[0].fileName;
     const label = `Global analysis - getSemanticDiagnostics for ${fileName}`;
-    if (isDebugMode) {
+    if (utils.isDebugMode) {
       console.time(label);
     }
     // Getting semantic diagnostics will trigger a global analysis.
     project.getLanguageService().getSemanticDiagnostics(fileName);
-    if (isDebugMode) {
+    if (utils.isDebugMode) {
       console.timeEnd(label);
     }
   }
 
   private handleCompilerOptionsDiagnostics(project: ts.server.Project): void {
-    if (!isConfiguredProject(project)) {
+    if (!utils.isConfiguredProject(project)) {
       return;
     }
 
@@ -561,18 +659,71 @@ export class Session {
         continue;
       }
       const label = `${reason} - getSemanticDiagnostics for ${fileName}`;
-      if (isDebugMode) {
+      if (utils.isDebugMode) {
         console.time(label);
       }
+
+      let resultPugDocument: pugLs.PugDocument | null = null;
+      let lspDiagnostics: lsp.Diagnostic[] = [];
+      if (fileName.endsWith('.pug')) {
+        resultPugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, result.scriptInfo);
+
+        if (!resultPugDocument) {
+          return;
+        }
+
+        // Show new line source maps
+        // lspDiagnostics.push(...resultPugDocument
+        //   .sourceMap
+        //   .mappings
+        //   .reduce((acc: lsp.Diagnostic[], mapping) => {
+        //      if (mapping?.data?.text !== 'newline') {
+        //        return acc;
+        //      }
+
+        //      acc.push({
+        //        message: `Pug: ${mapping.sourceRange.start} -> ${mapping.sourceRange.end}, HTML: ${mapping.mappedRange.start} -> ${mapping.mappedRange.end}`,
+        //        range: {
+        //          start: resultPugDocument!.pugTextDocument.positionAt(mapping.sourceRange.start),
+        //          end: resultPugDocument!.pugTextDocument.positionAt(mapping.sourceRange.end),
+        //        }
+        //      });
+
+        //      return acc;
+        //    }, [] as lsp.Diagnostic[])
+        //  )
+      }
+
       const diagnostics = result.languageService.getSemanticDiagnostics(fileName);
-      if (isDebugMode) {
+      if (utils.isDebugMode) {
         console.timeEnd(label);
       }
+
+      const ngDiagnostics: lsp.Diagnostic[] = diagnostics
+        .map(tsDiagnostic => {
+          let lspDiagnostic;
+
+          if (resultPugDocument) {
+            lspDiagnostic = tsDiagnosticToLspDiagnostic(tsDiagnostic, resultPugDocument.htmlTextDocument);
+
+            lspDiagnostic.range = utils.translateHtmlRangeToPug(lspDiagnostic.range, resultPugDocument);
+          } else {
+            lspDiagnostic = tsDiagnosticToLspDiagnostic(tsDiagnostic, result.scriptInfo);
+          }
+
+          return lspDiagnostic
+        });
+
+      let pugDiagnostics = [];
+      if (resultPugDocument?.error) {
+        pugDiagnostics.push(pugDiagnosticToLspDiagnostic(resultPugDocument?.error)!);
+      }
+
       // Need to send diagnostics even if it's empty otherwise editor state will
       // not be updated.
       this.connection.sendDiagnostics({
-        uri: filePathToUri(fileName),
-        diagnostics: diagnostics.map(d => tsDiagnosticToLspDiagnostic(d, result.scriptInfo)),
+        uri: utils.filePathToUri(fileName),
+        diagnostics: [...ngDiagnostics, ...pugDiagnostics, ...lspDiagnostics],
       });
       if (this.diagnosticsTimeout) {
         // There is a pending request to check diagnostics for all open files,
@@ -668,7 +819,7 @@ export class Session {
 
   private onDidOpenTextDocument(params: lsp.DidOpenTextDocumentParams) {
     const {uri, languageId, text} = params.textDocument;
-    const filePath = uriToFilePath(uri);
+    const filePath = utils.uriToFilePath(uri);
     if (!filePath) {
       return;
     }
@@ -690,7 +841,7 @@ export class Session {
       }
       const project = configFileName ?
           this.projectService.findProject(configFileName) :
-          this.projectService.getScriptInfo(filePath)?.containingProjects.find(isConfiguredProject);
+          this.projectService.getScriptInfo(filePath)?.containingProjects.find(utils.isConfiguredProject);
       if (!project) {
         return;
       }
@@ -726,7 +877,7 @@ export class Session {
    * project open when navigating away from `html` files.
    */
   private createExternalProject(project: ts.server.Project): void {
-    if (isConfiguredProject(project) &&
+    if (utils.isConfiguredProject(project) &&
         !this.configuredProjToExternalProj.has(project.projectName)) {
       const extProjectName = `${project.projectName}-external`;
       project.projectService.openExternalProject({
@@ -740,7 +891,7 @@ export class Session {
 
   private onDidCloseTextDocument(params: lsp.DidCloseTextDocumentParams) {
     const {textDocument} = params;
-    const filePath = uriToFilePath(textDocument.uri);
+    const filePath = utils.uriToFilePath(textDocument.uri);
     if (!filePath) {
       return;
     }
@@ -777,7 +928,7 @@ export class Session {
 
   private onDidChangeTextDocument(params: lsp.DidChangeTextDocumentParams): void {
     const {contentChanges, textDocument} = params;
-    const filePath = uriToFilePath(textDocument.uri);
+    const filePath = utils.uriToFilePath(textDocument.uri);
     if (!filePath) {
       return;
     }
@@ -789,7 +940,9 @@ export class Session {
     }
     for (const change of contentChanges) {
       if ('range' in change) {
-        const [start, end] = lspRangeToTsPositions(scriptInfo, change.range);
+        const start = scriptInfo.lineOffsetToPosition(change.range.start.line + 1, change.range.start.character + 1);
+        const end = scriptInfo.lineOffsetToPosition(change.range.end.line + 1, change.range.end.character + 1);
+
         scriptInfo.editContent(start, end, change.text);
       } else {
         // New text is considered to be the full content of the document.
@@ -806,7 +959,7 @@ export class Session {
 
   private onDidSaveTextDocument(params: lsp.DidSaveTextDocumentParams): void {
     const {text, textDocument} = params;
-    const filePath = uriToFilePath(textDocument.uri);
+    const filePath = utils.uriToFilePath(textDocument.uri);
     if (!filePath) {
       return;
     }
@@ -828,12 +981,44 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+
+    let pugDocument: pugLs.PugDocument | null = null;
+    let offset: number;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
     const definition = languageService.getDefinitionAndBoundSpan(scriptInfo.fileName, offset);
     if (!definition || !definition.definitions) {
       return null;
     }
-    const originSelectionRange = tsTextSpanToLspRange(scriptInfo, definition.textSpan);
+
+    let originSelectionRange;
+    if (pugDocument) {
+      originSelectionRange = utils.translateHtmlRangeToPug(
+        utils.tsTextSpanToLspRange(
+          pugDocument.htmlTextDocument,
+          definition.textSpan
+        ),
+        pugDocument,
+      );
+    } else {
+      originSelectionRange = utils.tsTextSpanToLspRange(scriptInfo, definition.textSpan);
+    }
+
     return this.tsDefinitionsToLspLocationLinks(definition.definitions, originSelectionRange);
   }
 
@@ -843,7 +1028,26 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+
+    let pugDocument: pugLs.PugDocument | null = null;
+    let offset: number;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
     const definitions = languageService.getTypeDefinitionAtPosition(scriptInfo.fileName, offset);
     if (!definitions) {
       return null;
@@ -862,7 +1066,25 @@ export class Session {
       return null;
     }
 
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    let pugDocument: pugLs.PugDocument | null = null;
+    let offset: number;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
     const renameLocations = languageService.findRenameLocations(
         scriptInfo.fileName, offset, /*findInStrings*/ false, /*findInComments*/ false);
     if (renameLocations === undefined) {
@@ -870,7 +1092,7 @@ export class Session {
     }
 
     const changes = renameLocations.reduce((changes, location) => {
-      let uri: lsp.URI = filePathToUri(location.fileName);
+      let uri: lsp.URI = utils.filePathToUri(location.fileName);
       if (changes[uri] === undefined) {
         changes[uri] = [];
       }
@@ -880,7 +1102,25 @@ export class Session {
       if (lsInfo === null) {
         return changes;
       }
-      const range = tsTextSpanToLspRange(lsInfo.scriptInfo, location.textSpan);
+
+      let pugDocument: pugLs.PugDocument | null = null;
+      let range: lsp.Range;
+
+      if (scriptInfo.fileName.endsWith('.pug')) {
+        pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+        if (pugDocument.error) {
+          return changes;
+        }
+
+        range = utils.translateHtmlRangeToPug(
+          utils.tsTextSpanToLspRange(pugDocument.htmlTextDocument, location.textSpan),
+          pugDocument
+        );
+      } else {
+        range = utils.tsTextSpanToLspRange(scriptInfo, location.textSpan);
+      }
+
       fileEdits.push({range, newText: params.newName});
       return changes;
     }, {} as {[uri: string]: lsp.TextEdit[]});
@@ -900,12 +1140,40 @@ export class Session {
       return null;
     }
 
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    let pugDocument: pugLs.PugDocument | null = null;
+    let offset: number;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
     const renameInfo = languageService.getRenameInfo(scriptInfo.fileName, offset);
     if (!renameInfo.canRename) {
       return null;
     }
-    const range = tsTextSpanToLspRange(scriptInfo, renameInfo.triggerSpan);
+
+    let range;
+    if (pugDocument) {
+      range = utils.translateHtmlRangeToPug(
+        utils.tsTextSpanToLspRange(pugDocument.htmlTextDocument, renameInfo.triggerSpan),
+        pugDocument
+      );
+    } else {
+      range = utils.tsTextSpanToLspRange(scriptInfo, renameInfo.triggerSpan);
+    }
+
     return {
       range,
       placeholder: renameInfo.displayName,
@@ -918,15 +1186,46 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+
+    let pugDocument: pugLs.PugDocument | null = null;
+    let offset: number;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
     const references = languageService.getReferencesAtPosition(scriptInfo.fileName, offset);
     if (references === undefined) {
       return null;
     }
     return references.map(ref => {
       const scriptInfo = this.projectService.getScriptInfo(ref.fileName);
-      const range = scriptInfo ? tsTextSpanToLspRange(scriptInfo, ref.textSpan) : EMPTY_RANGE;
-      const uri = filePathToUri(ref.fileName);
+
+      let range;
+      if (pugDocument) {
+        range = utils.translateHtmlRangeToPug(
+          utils.tsTextSpanToLspRange(pugDocument.htmlTextDocument, ref.textSpan),
+          pugDocument
+        );
+      } else if (scriptInfo) {
+        range = utils.tsTextSpanToLspRange(scriptInfo, ref.textSpan);
+      } else {
+        range = EMPTY_RANGE;
+      }
+
+      const uri = utils.filePathToUri(ref.fileName);
       return {uri, range};
     });
   }
@@ -951,14 +1250,23 @@ export class Session {
       let range = EMPTY_RANGE;
       if (scriptInfo) {
         const project = this.getDefaultProjectForScriptInfo(scriptInfo);
-        mappedInfo = project ? getMappedDefinitionInfo(d, project) : mappedInfo;
+        mappedInfo = project ? utils.getMappedDefinitionInfo(d, project) : mappedInfo;
         // After the DTS file maps to original source file, the `scriptInfo` should be updated.
         const originalScriptInfo =
             this.projectService.getScriptInfo(mappedInfo.fileName) ?? scriptInfo;
-        range = tsTextSpanToLspRange(originalScriptInfo, mappedInfo.textSpan);
+        const pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, originalScriptInfo);
+
+        if (pugDocument) {
+          range = utils.translateHtmlRangeToPug(
+            utils.tsTextSpanToLspRange(pugDocument.htmlTextDocument, mappedInfo.textSpan),
+            pugDocument
+          );
+        } else {
+          range = utils.tsTextSpanToLspRange(scriptInfo, mappedInfo.textSpan);
+        }
       }
 
-      const targetUri = filePathToUri(mappedInfo.fileName);
+      const targetUri = utils.filePathToUri(mappedInfo.fileName);
       results.push({
         originSelectionRange,
         targetUri,
@@ -972,7 +1280,7 @@ export class Session {
   private getLSAndScriptInfo(textDocumentOrFileName: lsp.TextDocumentIdentifier|string):
       {languageService: NgLanguageService, scriptInfo: ts.server.ScriptInfo}|null {
     const filePath = lsp.TextDocumentIdentifier.is(textDocumentOrFileName) ?
-        uriToFilePath(textDocumentOrFileName.uri) :
+        utils.uriToFilePath(textDocumentOrFileName.uri) :
         textDocumentOrFileName;
     const scriptInfo = this.projectService.getScriptInfo(filePath);
     if (!scriptInfo) {
@@ -1005,11 +1313,36 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+
+    let pugDocument: pugLs.PugDocument | null = null;
+    let offset: number;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return null;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          params.position,
+          pugDocument,
+        )
+      );
+
+      const pugInfo = this.pugLs.doHover(pugDocument, params.position) || null;
+      if (pugInfo) {
+        return pugInfo;
+      }
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, params.position);
+    }
+
     const info = languageService.getQuickInfoAtPosition(scriptInfo.fileName, offset);
     if (!info) {
       return null;
     }
+
     const {kind, kindModifiers, textSpan, displayParts, documentation} = info;
     let desc = kindModifiers ? kindModifiers + ' ' : '';
     if (displayParts && displayParts.length > 0) {
@@ -1028,19 +1361,30 @@ export class Session {
         contents.push(d.text);
       }
     }
+
+    let range: lsp.Range;
+    if (pugDocument) {
+      range = utils.translateHtmlRangeToPug(
+        utils.tsTextSpanToLspRange(pugDocument.htmlTextDocument, textSpan),
+        pugDocument
+      );
+    } else {
+      range = utils.tsTextSpanToLspRange(scriptInfo, textSpan);
+    }
+
     return {
       contents,
-      range: tsTextSpanToLspRange(scriptInfo, textSpan),
+      range,
     };
   }
 
-  private onCompletion(params: lsp.CompletionParams): lsp.CompletionItem[]|null {
+  private async onCompletion(params: lsp.CompletionParams): Promise<lsp.CompletionItem[]|null> {
+    // Note: *ngIf="" completions inside the quotes don't work even in the original code
     const lsInfo = this.getLSAndScriptInfo(params.textDocument);
     if (lsInfo === null) {
-      return null;
+      return new Promise(() => null);
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
 
     let options: ts.GetCompletionsAtPositionOptions = {};
     const includeCompletionsWithSnippetText =
@@ -1054,17 +1398,139 @@ export class Session {
       };
     }
 
-    const completions =
-        languageService.getCompletionsAtPosition(scriptInfo.fileName, offset, options);
-    if (!completions) {
-      return null;
-    }
     const clientSupportsInsertReplaceCompletion =
         this.clientCapabilities.textDocument?.completion?.completionItem?.insertReplaceSupport ??
         false;
-    return completions.entries.map(
-        (e) => tsCompletionEntryToLspCompletionItem(
-            e, params.position, scriptInfo, clientSupportsInsertReplaceCompletion, this.ivy));
+
+    let ngCompletions;
+    if (!scriptInfo.fileName.endsWith('.pug')) {
+      return getHtmlCompletions(
+        scriptInfo,
+        languageService,
+        params.position,
+        options,
+        clientSupportsInsertReplaceCompletion,
+        this.ivy
+      );
+    }
+
+    const documentSnapshot = scriptInfo.getSnapshot()
+    const documentText = documentSnapshot
+      .getText(0, documentSnapshot.getLength());
+
+    let pugDocument = this.pugLs.parsePugDocument(documentText);
+
+    if (pugDocument.error) {
+      return null;
+    }
+
+    const pugCursorPosition = {line: params.position.line, character: params.position.character};
+    const pugCursorOffset = pugDocument.pugTextDocument.offsetAt(pugCursorPosition);
+
+    const lineStart = pugDocument.pugTextDocument.getText({start: {line: pugCursorPosition.line, character: 0}, end: {line: pugCursorPosition.line + 1, character: 0}}).trimLeft();
+
+    if (lineStart.startsWith('|') || lineStart.startsWith('-')) {
+      // | (pipe) is for whitespace control in strings so nothing following it can have autocomplete
+      // - neither for hyphen because that's a js line
+      return null;
+    }
+
+    const htmlCursorOffset = pugDocument.sourceMap.getMappedRange(pugCursorOffset)?.[0].start
+
+    if (htmlCursorOffset === undefined) {
+      // Some error has occured, return no results
+      return null;
+    }
+
+    const htmlCursorLocation = pugDocument.htmlTextDocument.positionAt(htmlCursorOffset);
+
+    ngCompletions = languageService.getCompletionsAtPosition(
+      scriptInfo.fileName,
+      htmlCursorOffset,
+      options,
+    );
+
+    let mappedCompletions: lsp.CompletionItem[] = [];
+    if (ngCompletions?.entries.length) {
+      mappedCompletions = ngCompletions.entries.map((e) => {
+        return tsCompletionEntryToLspCompletionItem(
+          e,
+          {line: htmlCursorLocation.line, character: htmlCursorLocation.character},
+          scriptInfo,
+          clientSupportsInsertReplaceCompletion,
+          this.ivy,
+          pugDocument.htmlTextDocument,
+        )
+      });
+
+      let bracketCorrection = 0;
+      if (pugDocument.pugTextDocument.getText().substring(pugCursorOffset - 1, pugCursorOffset + 1) === '[]') {
+        bracketCorrection = 1
+      }
+
+      mappedCompletions.map(c => {
+        const translate = (position: lsp.Position, bracketCorrection = 0) => {
+          // get pug offset of htmlcursorposition
+          // subtract from pug cursor offset
+          // this lets us convert angular's incorrect positions to the real positions.
+
+          const mappedPugOffset = utils.extractOffsetFromSourceMapPosition(pugDocument.sourceMap.getSourceRange(htmlCursorOffset));
+
+          if (!mappedPugOffset) {
+            return pugCursorPosition;
+          }
+
+          const pugCorrectionOffset = pugCursorOffset - mappedPugOffset;
+
+          const angularHtmlOffset = pugDocument.htmlTextDocument.offsetAt(position);
+          const mappedAngularPugOffset = utils.extractOffsetFromSourceMapPosition(pugDocument.sourceMap.getSourceRange(angularHtmlOffset));
+
+          if (!mappedAngularPugOffset) {
+            return pugCursorPosition;
+          }
+
+          const pugDocumentLength = pugDocument.pugTextDocument.getText().length - 1;
+
+          const sourceMapCorrectedAngularPugOffset = mappedAngularPugOffset + pugCorrectionOffset + bracketCorrection;
+          const clampedSourceMapCorrectedAngularPugOffset = Math.min(Math.max(sourceMapCorrectedAngularPugOffset, 0), pugDocumentLength);
+
+          return pugDocument.pugTextDocument.positionAt(clampedSourceMapCorrectedAngularPugOffset);
+        }
+
+        if (c?.textEdit && 'range' in c.textEdit) {
+          c.textEdit.range.start = translate(c.textEdit.range.start);
+          c.textEdit.range.end = translate(c.textEdit.range.end);
+        }
+
+        if (c?.textEdit && 'insert' in c.textEdit) {
+          c.textEdit.insert.start = translate(c.textEdit.insert.start);
+          c.textEdit.insert.end = translate(c.textEdit.insert.end, bracketCorrection);
+        }
+
+        if (c?.textEdit && 'replace' in c.textEdit) {
+          c.textEdit.replace.start = translate(c.textEdit.replace.start);
+          c.textEdit.replace.end = translate(c.textEdit.replace.end, bracketCorrection);
+        }
+
+        c.data.position = translate(c.data.position);
+      });
+
+    }
+
+    const pugCompletions = await getPugCompletions(pugDocument, pugCursorPosition, htmlCursorOffset, pugCursorOffset, this.pugLs);
+
+    const returnResults: lsp.CompletionItem[] = [];
+    if (pugCompletions?.items.length) {
+      returnResults.push(
+        ...pugCompletions.items.filter(item => !/\/.*\>/.test(item.textEdit?.newText || ''))
+      );
+    }
+
+    if (mappedCompletions.length) {
+      returnResults.push(...mappedCompletions);
+    }
+
+    return returnResults || null;
   }
 
   private onCompletionResolve(item: lsp.CompletionItem): lsp.CompletionItem {
@@ -1082,7 +1548,24 @@ export class Session {
     }
     const {languageService, scriptInfo} = lsInfo;
 
-    const offset = lspPositionToTsPosition(scriptInfo, position);
+    let offset: number;
+    if (scriptInfo.fileName.endsWith('.pug')) {
+      const pugDocument = utils.getPugDocumentFromScriptInfo(this.pugLs, scriptInfo);
+
+      if (pugDocument.error) {
+        return item;
+      }
+
+      offset = pugDocument.htmlTextDocument.offsetAt(
+        utils.translatePugPositionToHtml(
+          position,
+          pugDocument,
+        )
+      );
+    } else {
+      offset = utils.lspPositionToTsPosition(scriptInfo, position);
+    }
+
     const details = languageService.getCompletionEntryDetails(
         filePath, offset, item.insertText ?? item.label, undefined, undefined, undefined,
         undefined);
@@ -1179,7 +1662,7 @@ export class Session {
    * Disable the language service, run ngcc, then re-enable language service.
    */
   private async runNgcc(project: ts.server.Project): Promise<void> {
-    if (!isConfiguredProject(project) || this.projectNgccQueue.some(p => p.project === project)) {
+    if (!utils.isConfiguredProject(project) || this.projectNgccQueue.some(p => p.project === project)) {
       return;
     }
     // Disable language service until ngcc is completed.

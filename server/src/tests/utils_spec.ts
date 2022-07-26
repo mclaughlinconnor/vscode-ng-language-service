@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {filePathToUri, MruTracker, uriToFilePath} from '../utils';
+import {filePathToUri, MruTracker, uriToFilePath} from '../utils/utils';
 
 describe('filePathToUri', () => {
   it('should return URI with File scheme', () => {

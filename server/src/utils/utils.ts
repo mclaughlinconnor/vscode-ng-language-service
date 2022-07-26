@@ -10,6 +10,31 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import * as lsp from 'vscode-languageserver';
 import {URI} from 'vscode-uri';
 
+import * as pugLs from '@volar/pug-language-service';
+import * as vscode from 'vscode-languageserver-types';
+import {TextDocument} from 'vscode-languageserver-textdocument';
+import {
+  _lspPositionToTsPositionTextDocument,
+  _lspRangeToTsPositionsTextDocument,
+  _tsRelatedInformationToLspRelatedInformationTextDocument,
+  _tsTextSpanToLspRangeTextDocument,
+} from './textDocument';
+import {
+  _lspPositionToTsPositionScriptInfo,
+  _tsRelatedInformationToLspRelatedInformationScriptInfo,
+  _tsTextSpanToLspRangeScriptInfo,
+} from './scriptInfo';
+
+export {
+  translateHtmlOffsetToPug,
+  translateHtmlPositionToPug,
+  translateHtmlRangeToPug,
+  translatePosition,
+  translatePugOffsetToHtml,
+  translatePugPositionToHtml,
+  translateRange,
+} from './translation'
+
 export const isDebugMode = process.env['NG_DEBUG'] === 'true';
 
 enum Scheme {
@@ -40,72 +65,33 @@ export function filePathToUri(filePath: string): lsp.DocumentUri {
 }
 
 /**
- * Convert ts.TextSpan to lsp.TextSpan. TypeScript keeps track of offset using
- * 1-based index whereas LSP uses 0-based index.
- * @param scriptInfo Used to determine the offsets.
- * @param textSpan
+ * Get the starting offset/position from a source map result
+ * @param sourceMapPosition
  */
-export function tsTextSpanToLspRange(scriptInfo: ts.server.ScriptInfo, textSpan: ts.TextSpan) {
-  const start = scriptInfo.positionToLineOffset(textSpan.start);
-  const end = scriptInfo.positionToLineOffset(textSpan.start + textSpan.length);
-  // ScriptInfo (TS) is 1-based, LSP is 0-based.
-  return lsp.Range.create(start.line - 1, start.offset - 1, end.line - 1, end.offset - 1);
+export function extractOffsetFromSourceMapPosition<T = vscode.Position | number>(
+  sourceMapPosition: [{start: T; end: T;}, {isEmptyTagCompletion: boolean;} | undefined] | undefined
+): T | undefined {
+  return sourceMapPosition?.[0].start;
 }
 
 /**
- * Convert lsp.Position to the absolute offset in the file. LSP keeps track of
- * offset using 0-based index whereas TypeScript uses 1-based index.
- * @param scriptInfo Used to determine the offsets.
- * @param position
+ * Get the parsed PugDocument that corresponds to a ts.server.ScriptInfo
+ * @param pugLs
+ * @param scriptInfo
+ * @param scriptInfo
  */
-export function lspPositionToTsPosition(scriptInfo: ts.server.ScriptInfo, position: lsp.Position) {
-  const {line, character} = position;
-  // ScriptInfo (TS) is 1-based, LSP is 0-based.
-  return scriptInfo.lineOffsetToPosition(line + 1, character + 1);
+export function getPugDocumentFromScriptInfo(pugLs: pugLs.LanguageService, scriptInfo: ts.server.ScriptInfo): pugLs.PugDocument {
+    const documentSnapshot = scriptInfo.getSnapshot()
+    const documentText = documentSnapshot
+      .getText(0, documentSnapshot.getLength());
+
+    return pugLs.parsePugDocument(documentText);
 }
 
 /**
- * Convert lsp.Range which is made up of `start` and `end` positions to
- * TypeScript's absolute offsets.
- * @param scriptInfo Used to determine the offsets.
- * @param range
+ * Check if a project is configured
+ * @param project
  */
-export function lspRangeToTsPositions(
-    scriptInfo: ts.server.ScriptInfo, range: lsp.Range): [number, number] {
-  const start = lspPositionToTsPosition(scriptInfo, range.start);
-  const end = lspPositionToTsPosition(scriptInfo, range.end);
-  return [start, end];
-}
-
-/**
- * Convert a ts.DiagnosticRelatedInformation array to a
- * lsp.DiagnosticRelatedInformation array
- * @param scriptInfo Used to determine the offsets.
- * @param relatedInfo
- */
-export function tsRelatedInformationToLspRelatedInformation(
-    scriptInfo: ts.server.ScriptInfo,
-    relatedInfo?: ts.DiagnosticRelatedInformation[]): lsp.DiagnosticRelatedInformation[]|undefined {
-  if (relatedInfo === undefined) return;
-  const lspRelatedInfo: lsp.DiagnosticRelatedInformation[] = [];
-  for (const info of relatedInfo) {
-    if (info.file === undefined || info.start === undefined || info.length === undefined) continue;
-    const textSpan: ts.TextSpan = {
-      start: info.start,
-      length: info.length,
-    };
-    const location = lsp.Location.create(
-        filePathToUri(info.file.fileName),
-        tsTextSpanToLspRange(scriptInfo, textSpan),
-    );
-    lspRelatedInfo.push(lsp.DiagnosticRelatedInformation.create(
-        location,
-        ts.flattenDiagnosticMessageText(info.messageText, '\n'),
-        ));
-  }
-  return lspRelatedInfo;
-}
-
 export function isConfiguredProject(project: ts.server.Project):
     project is ts.server.ConfiguredProject {
   return project.projectKind === ts.server.ProjectKind.Configured;
@@ -140,6 +126,10 @@ export class MruTracker {
   }
 }
 
+/**
+ * Combine ts.SymboleDisplayParts into a regular string
+ * @param parts
+ */
 export function tsDisplayPartsToText(parts: ts.SymbolDisplayPart[]): string {
   return parts.map(dp => dp.text).join('');
 }
@@ -197,15 +187,73 @@ function documentSpanLocation({fileName, textSpan}: ts.DocumentSpan): DocumentPo
 function getMappedContextSpan(
     documentSpan: ts.DocumentSpan, project: ts.server.Project): ts.TextSpan|undefined {
   const contextSpanStart = documentSpan.contextSpan &&
-      getMappedLocation({fileName: documentSpan.fileName, pos: documentSpan.contextSpan.start},
-                        project);
+    getMappedLocation(
+      {fileName: documentSpan.fileName, pos: documentSpan.contextSpan.start},
+      project
+    );
   const contextSpanEnd = documentSpan.contextSpan &&
-      getMappedLocation({
-                          fileName: documentSpan.fileName,
-                          pos: documentSpan.contextSpan.start + documentSpan.contextSpan.length
-                         },
-                        project);
+    getMappedLocation(
+      { fileName: documentSpan.fileName, pos: documentSpan.contextSpan.start + documentSpan.contextSpan.length },
+      project
+    );
   return contextSpanStart && contextSpanEnd ?
       {start: contextSpanStart.pos, length: contextSpanEnd.pos - contextSpanStart.pos} :
       undefined;
+}
+
+/**
+ * Convert lsp.Position to the absolute offset in the file. LSP keeps track of
+ * offset using 0-based index whereas TypeScript uses 1-based index.
+ * @param file Used to determine the offsets.
+ * @param position
+ */
+export function lspPositionToTsPosition(file: ts.server.ScriptInfo | TextDocument, position: lsp.Position): number {
+  if (file instanceof ts.server.ScriptInfo) {
+    return _lspPositionToTsPositionScriptInfo(file, position);
+  } else {
+    return _lspPositionToTsPositionTextDocument(file, position);
+  }
+}
+
+/**
+ * Convert ts.TextSpan to lsp.TextSpan. TypeScript keeps track of offset using
+ * 1-based index whereas LSP uses 0-based index.
+ * @param file Used to determine the offsets.
+ * @param textSpan
+ */
+export function tsTextSpanToLspRange(file: ts.server.ScriptInfo | TextDocument, textSpan: ts.TextSpan) {
+  if (file instanceof ts.server.ScriptInfo) {
+    return _tsTextSpanToLspRangeScriptInfo(file, textSpan);
+  } else {
+    return _tsTextSpanToLspRangeTextDocument(file, textSpan);
+  }
+}
+
+/**
+ * Convert lsp.Range which is made up of `start` and `end` positions to
+ * TypeScript's absolute offsets.
+ * @param file Used to determine the offsets.
+ * @param range
+ */
+export function lspRangeToTsPositions(
+  file: TextDocument, range: lsp.Range
+): [number, number] {
+  return _lspRangeToTsPositionsTextDocument(file, range);
+}
+
+/**
+ * Convert a ts.DiagnosticRelatedInformation array to a
+ * lsp.DiagnosticRelatedInformation array
+ * @param file Used to determine the offsets.
+ * @param relatedInfo
+ */
+export function tsRelatedInformationToLspRelatedInformation(
+    file: ts.server.ScriptInfo | TextDocument,
+    relatedInfo?: ts.DiagnosticRelatedInformation[]
+  ): lsp.DiagnosticRelatedInformation[] | undefined {
+  if (file instanceof ts.server.ScriptInfo) {
+    return _tsRelatedInformationToLspRelatedInformationScriptInfo(file, relatedInfo);
+  } else {
+    return _tsRelatedInformationToLspRelatedInformationTextDocument(file, relatedInfo);
+  }
 }
