@@ -1,5 +1,5 @@
 {
-  "name": "@angular/language-server",
+  "name": "pugjs-angular-language-server",
   "description": "LSP server for Angular Language Service",
   "version": "14.2.0",
   "repository": {
@@ -15,12 +15,18 @@
     "ngserver": "./bin/ngserver"
   },
   "dependencies": {
-    "@angular/language-service": "14.2.0",
+    "@angular/compiler": "14.0.0-next.9",
+    "@volar/source-map": "^0.37.4",
+    "pug-lexer": "^5.0.1",
+    "pug-parser": "^6.0.0",
+    "pugjs-angular-cli": "14.1.0-next.0",
+    "pugjs-angular-language-service": "14.1.0-next.1",
+    "pugjs-language-service": "0.38.1-angular",
+    "typescript": "4.5.4",
+    "vscode-html-languageservice": "^5.0.0",
     "vscode-jsonrpc": "6.0.0",
+    "vscode-languageclient": "7.0.0",
     "vscode-languageserver": "7.0.0",
     "vscode-uri": "3.0.3"
-  },
-  "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }

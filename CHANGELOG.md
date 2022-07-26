@@ -25,8 +25,8 @@ This release upgrades `@angular/language-service` to v14.0.0
 * feat(extension): Support renaming from TypeScript files (#1589)
 * feat(extension): Add option to force strict templates (#1646) (17fdb9ec6)
 * feat: add command to run ngcc manually (#1621) (dd0e0009b)
-* Fix detection of Angular for v14+ projects ([#45998](https://github.com/angular/angular/pull/45998)) 
-* Prevent TSServer from removing templates from project ([#45965](https://github.com/angular/angular/pull/45965)) 
+* Fix detection of Angular for v14+ projects ([#45998](https://github.com/angular/angular/pull/45998))
+* Prevent TSServer from removing templates from project ([#45965](https://github.com/angular/angular/pull/45965))
 
 # v13.3.4
 
@@ -38,13 +38,13 @@ This release upgrades `@angular/language-service` to v13.3.8.
 
 # v13.2.3
 
-This release upgrades `@angular/language-service` to v13.2.2.
+This release upgrades `pugjs-angular-language-service` to v13.2.2.
 
 * build(server): Update node version to match angular/angular (including v16) (#1612) (8d2420f11)
 
 # v13.2.2
 
-This release upgrades `@angular/language-service` to v13.2.1.
+This release upgrades `pugjs-angular-language-service` to v13.2.1.
 
 * fix(server): return the right range for the original source file of DTS (#1604) (2caa6cf23)
 
@@ -55,7 +55,7 @@ Skipped due to release process mistake.
 
 # v13.2.0
 
-This release upgrades `@angular/language-service` to v13.2.0.
+This release upgrades `pugjs-angular-language-service` to v13.2.0.
 
 * feat(server): Definitions for sources compiled with `declarationMap` go to
   original source
@@ -63,13 +63,13 @@ This release upgrades `@angular/language-service` to v13.2.0.
 
 # v13.1.0
 
-This release upgrades `@angular/language-service` to v13.1.0.
+This release upgrades `pugjs-angular-language-service` to v13.1.0.
 
 * fix: Correctly parse inputs and selectors with dollar signs (#44268)
 
 # v13.0.0
 
-This release upgrades `@angular/language-service` to v13.0.0.
+This release upgrades `pugjs-angular-language-service` to v13.0.0.
 For a complete change log see
 [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1300-2021-11-03).
 
@@ -80,25 +80,25 @@ For a complete change log see
 
 # v12.2.3
 
-This release upgrades `@angular/language-service` to v12.2.12.
+This release upgrades `pugjs-angular-language-service` to v12.2.12.
 
 This release contains various internal refactorings and dependency updates.
 
 # v12.2.2
 
-This release upgrades `@angular/language-service` to v12.2.10.
+This release upgrades `pugjs-angular-language-service` to v12.2.10.
 
 * support resolving ngcc from APF v13 output (#1523) (f8aa9927c)
 
 # v12.2.1
 
-This release upgrades `@angular/language-service` to v12.2.9.
+This release upgrades `pugjs-angular-language-service` to v12.2.9.
 
 This release contains various internal refactorings and dependency updates.
 
 # v12.2.0
 
-This release upgrades `@angular/language-service` to v12.2.0.
+This release upgrades `pugjs-angular-language-service` to v12.2.0.
 For a complete change log see
 [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1220-2021-08-04).
 
@@ -107,7 +107,7 @@ For a complete change log see
 
 # v12.1.4
 
-This release upgrades `@angular/language-service` to v12.1.4.
+This release upgrades `pugjs-angular-language-service` to v12.1.4.
 For a complete change log see
 [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1214-2021-07-28).
 
@@ -117,7 +117,7 @@ For a complete change log see
 
 # v12.1.3
 
-This release upgrades `@angular/language-service` to v12.1.3.
+This release upgrades `pugjs-angular-language-service` to v12.1.3.
 For a complete change log see
 [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1213-2021-07-21).
 
@@ -125,7 +125,7 @@ For a complete change log see
 
 # v12.1.2
 
-This release upgrades `@angular/language-service` to v12.1.2.
+This release upgrades `pugjs-angular-language-service` to v12.1.2.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1212-2021-07-14).
 
 1. fix(language-server): Ensure LS is enabled in same order as project initialization for solution-style projects (#1447) (68ee8344e)
@@ -133,7 +133,7 @@ For a complete change log see [here](https://github.com/angular/angular/blob/mai
 
 # v12.1.1
 
-This release upgrades `@angular/language-service` to v12.1.1.
+This release upgrades `pugjs-angular-language-service` to v12.1.1.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1211-2021-06-30).
 
 * update to TS 4.3.4 (#1428) (fb6681ee6)
@@ -141,7 +141,7 @@ For a complete change log see [here](https://github.com/angular/angular/blob/mai
 # v12.1.0
 
 
-This release upgrades `@angular/language-service` to v12.1.0.
+This release upgrades `pugjs-angular-language-service` to v12.1.0.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1210-2021-06-24).
 
 Features:
@@ -157,13 +157,13 @@ Bug fixes:
 
 # v12.0.4
 
-This release upgrades `@angular/language-service` to v12.0.3.
+This release upgrades `pugjs-angular-language-service` to v12.0.3.
 
 Bug fixes:
 1. compiler-cli: better detect classes that are indirectly exported (#42207)
 
 # v12.0.3
-This release upgrades `@angular/language-service` to v12.0.2.
+This release upgrades `pugjs-angular-language-service` to v12.0.2.
 
 * fix: support nullish coalesce for syntax highlighting  (#1376) (fa8a98678)
 
@@ -185,7 +185,7 @@ This is because the configuration value is typed as `boolean`, and defaults to
 
 # v12.0.0
 
-This release upgrades `@angular/language-service` to v12.0.0.
+This release upgrades `pugjs-angular-language-service` to v12.0.0.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1200-2021-05-12).
 
 New features:
@@ -209,11 +209,11 @@ Bug fixes:
 1. only restart language server on angular configuration change (fb5f89590)
 1. do not minify the client code (1068ef40a)
 1. logger should print one timestamp for an entire group (f3930c1dc)
-1. do not load plugins except @angular/language-service (0901addfd)
+1. do not load plugins except pugjs-angular-language-service (0901addfd)
 1. turn off logging by default (f5925ff26)
 1. do not watch directories in google3 (6a8a2d9b2)
 1. force enable Ivy and strictTemplates in google3 (9182c4cc5)
-1. use single entry point for @angular/language-service (93c541f2e)
+1. use single entry point for pugjs-angular-language-service (93c541f2e)
 1. detect @angular/core in google3 and don't run ngcc (ea1a7de77)
 1. retain typecheck files after project reload (bc9d9fc78)
 1. do not pass execArgv to ngcc process (460ef30f2)
@@ -239,13 +239,13 @@ Bug fixes:
 2. remove TSC_NONPOLLING_WATCHER env variable and provide default watchOptions (#1323) (#1326) (bbd0c60fa)
 
 # v11.2.13
-This release upgrades `@angular/language-service` to v11.2.12.
+This release upgrades `pugjs-angular-language-service` to v11.2.12.
 
 Bug fixes:
 1. High CPU usage when idle due to file watching (#1317) (06f1add66)
 
 # v11.2.12
-This release upgrades `@angular/language-service` to v11.2.11.
+This release upgrades `pugjs-angular-language-service` to v11.2.11.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#11211-2021-04-21).
 
 Bug fixes:
@@ -254,7 +254,7 @@ Bug fixes:
 
 # v11.2.11
 
-This release upgrades `@angular/language-service` to v11.2.10.
+This release upgrades `pugjs-angular-language-service` to v11.2.10.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#11210-2021-04-14).
 
 Bug fixes:
@@ -268,7 +268,7 @@ Performance improvements:
 
 # v11.2.10
 
-This release upgrades `@angular/language-service` to v11.2.9.
+This release upgrades `pugjs-angular-language-service` to v11.2.9.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1129-2021-04-07).
 
 Bug fixes:
@@ -280,10 +280,10 @@ Performance improvements:
 1. Add perf tracing to LanguageService (#41401) (7b0a800)
 
 # v11.2.9
-This release upgrades `@angular/language-service` to v11.2.7.
+This release upgrades `pugjs-angular-language-service` to v11.2.7.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1127-2021-03-24).
 
-bug fixes in `@angular/language-service`:
+bug fixes in `pugjs-angular-language-service`:
 * **compiler-cli:** add `useInlining` option to type check config ([#41268](https://github.com/angular/angular/issues/41268)) ([57644e9](https://github.com/angular/angular/commit/57644e95aadbfe9c8f336be77a22f7a5e1859758)), closes [#40963](https://github.com/angular/angular/issues/40963)
 * **language-service:** show suggestion when type inference is suboptimal ([#41072](https://github.com/angular/angular/issues/41072)) ([18cd7a0](https://github.com/angular/angular/commit/18cd7a0c6921983556fe1fffbff93d42ae138007)), closes [angular/vscode-ng-language-service#1155](https://github.com/angular/vscode-ng-language-service/issues/1155) [#41042](https://github.com/angular/angular/issues/41042)
 
@@ -304,7 +304,7 @@ This release reverts the following commits due to [#1198](https://github.com/ang
 
 # v11.2.6
 
-This release upgrades `@angular/language-service` to v11.2.5.
+This release upgrades `pugjs-angular-language-service` to v11.2.5.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1125-2021-03-10).
 
 This release contains various performance improvements.
@@ -314,16 +314,16 @@ This release contains various performance improvements.
 This release contains a few performance improvements.
 
 Bug fixes:
-- do not load plugins except @angular/language-service
+- do not load plugins except pugjs-angular-language-service
 - turn off logging by default
 - do not watch directories in google3
 
 # v11.2.4
 
-This release upgrades `@angular/language-service` to v11.2.4.
+This release upgrades `pugjs-angular-language-service` to v11.2.4.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1124-2021-03-03).
 
-Bug fixes in `@angular/language-service`:
+Bug fixes in `pugjs-angular-language-service`:
 - Add plugin option to force strictTemplates (#41063) (95f748c)
 - Always attempt HTML AST to template AST conversion for LS (#41068) (6dd5497), closes angular/vscode-ng-language-service#1140
 - can't provide the Input and Output custom binding property name (#41005) (1b1b65e)
@@ -343,7 +343,7 @@ Bug fixes in `@angular/language-server`:
 
 # v11.2.3
 
-This release upgrades `@angular/language-service` to v11.2.2.
+This release upgrades `pugjs-angular-language-service` to v11.2.2.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1110-2021-01-20).
 
 Performance improvements:
@@ -351,7 +351,7 @@ Performance improvements:
 
 # v11.2.2
 
-This release upgrades `@angular/language-service` to v11.2.1.
+This release upgrades `pugjs-angular-language-service` to v11.2.1.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1200-next1-2021-02-17).
 
 # v11.2.1
@@ -362,7 +362,7 @@ See https://github.com/angular/vscode-ng-language-service/issues/1109
 
 # v11.2.0
 
-This release upgrades `@angular/language-service` to v11.2.0.
+This release upgrades `pugjs-angular-language-service` to v11.2.0.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1120-2021-02-10).
 
 Bug fixes:
@@ -377,7 +377,7 @@ Features:
 
 # v11.1.3
 
-This release upgrades `@angular/language-service` to v11.1.2.
+This release upgrades `pugjs-angular-language-service` to v11.1.2.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1112-2021-02-03).
 
 # v11.1.2
@@ -386,7 +386,7 @@ No major updates in this release.
 
 # v11.1.1
 
-This release upgrades `@angular/language-service` to v11.1.1.
+This release upgrades `pugjs-angular-language-service` to v11.1.1.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1111-2021-01-27).
 
 # v11.1.0
@@ -394,7 +394,7 @@ For a complete change log see [here](https://github.com/angular/angular/blob/mai
 Ivy-native language service is officially available for preview!
 To try it, go to Preferences > Settings > Angular > check experimental-ivy.
 
-This release upgrades `@angular/language-service` to v11.1.0.
+This release upgrades `pugjs-angular-language-service` to v11.1.0.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1110-2021-01-20).
 
 # 0.1101.0-rc.1
@@ -405,7 +405,7 @@ Bug fixes:
 
 # v0.1101.0-rc.0
 
-This release upgrades `@angular/language-service` to v11.1.0-rc.0.
+This release upgrades `pugjs-angular-language-service` to v11.1.0-rc.0.
 
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1110-rc0-2021-01-13).
 
@@ -417,19 +417,19 @@ Features:
 
 # v0.1101.0-next.2
 
-This release upgrades `@angular/language-service` to v11.1.0-next.4.
+This release upgrades `pugjs-angular-language-service` to v11.1.0-next.4.
 
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1110-next4-2021-01-06).
 
 # v0.1101.0-next.1
 
-This release upgrades `@angular/language-service` to v11.1.0-next.3.
+This release upgrades `pugjs-angular-language-service` to v11.1.0-next.3.
 
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1110-next3-2020-12-16).
 
 # v0.1101.0-next.0
 
-This release upgrades `@angular/language-service` to v11.1.0-next.2.
+This release upgrades `pugjs-angular-language-service` to v11.1.0-next.2.
 
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1110-next2-2020-12-09).
 
@@ -439,7 +439,7 @@ Bug fixes:
 
 # v0.1100.0
 
-This release upgrades `@angular/language-service` to v11.0.0.
+This release upgrades `pugjs-angular-language-service` to v11.0.0.
 
 For a complete change log see [here](https://github.com/angular/angular/blob/11.0.x/CHANGELOG.md#1100-2020-11-11).
 
@@ -448,23 +448,23 @@ Bug fixes:
 
 # v0.1100.0-rc.1
 
-This release upgrades `@angular/language-service` to v11.0.0-rc.3.
+This release upgrades `pugjs-angular-language-service` to v11.0.0-rc.3.
 
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1100-rc3-2020-11-09).
 
 # v0.1100.0-rc.0
 
-This release upgrades `@angular/language-service` to v11.0.0-rc.1.
+This release upgrades `pugjs-angular-language-service` to v11.0.0-rc.1.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1100-rc1-2020-10-28).
 
 # v0.1000.8
 
-This release upgrades `@angular/language-service` to v10.0.14.
+This release upgrades `pugjs-angular-language-service` to v10.0.14.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#10014-2020-08-26).
 
 # v0.1000.7
 
-This release upgrades `@angular/language-service` to v10.0.7.
+This release upgrades `pugjs-angular-language-service` to v10.0.7.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1007-2020-07-30).
 
 This release fixes a bug caused by the upgrade of bundle format from ES5 to
@@ -475,19 +475,19 @@ Bug fixes:
 
 # v0.1000.6
 
-This release upgrades `@angular/language-service` to v10.0.6.
+This release upgrades `pugjs-angular-language-service` to v10.0.6.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1006-2020-07-28).
 
 # v0.1000.5
 
-This release upgrades `@angular/language-service` to v10.0.5.
+This release upgrades `pugjs-angular-language-service` to v10.0.5.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1005-2020-07-22).
 
 The `.umd` suffix has been removed from the bundle filename.
 
 # v0.1000.4
 
-This release upgrades `@angular/language-service` to v10.0.4.
+This release upgrades `pugjs-angular-language-service` to v10.0.4.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1004-2020-07-15).
 
 Features:
@@ -498,7 +498,7 @@ Bug fixes:
 
 # v0.1000.3
 
-This release upgrades `@angular/language-service` to v10.0.3.
+This release upgrades `pugjs-angular-language-service` to v10.0.3.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1003-2020-07-08).
 
 Bug fixes:
@@ -506,7 +506,7 @@ Bug fixes:
 
 # v0.1000.2
 
-This release upgrades `@angular/language-service` to v10.0.2.
+This release upgrades `pugjs-angular-language-service` to v10.0.2.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1002-2020-06-30).
 
 Bug fixes:
@@ -514,7 +514,7 @@ Bug fixes:
 
 # v0.1000.1
 
-This release upgrades `@angular/language-service` to v10.0.1.
+This release upgrades `pugjs-angular-language-service` to v10.0.1.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1001-2020-06-26).
 
 This release fixes support for ["solution-style"](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-3-9.html#support-for-solution-style-tsconfigjson-files) tsconfig.
@@ -524,7 +524,7 @@ Bug fixes:
 
 # v0.1000.0
 
-This release upgrades `@angular/language-service` to v10.0.0 and `typescript` to v3.9.5.
+This release upgrades `pugjs-angular-language-service` to v10.0.0 and `typescript` to v3.9.5.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1000-2020-06-24).
 
 Known issues:
@@ -546,42 +546,42 @@ Deprecations:
 
 # v0.1000.0-rc.1
 
-This release upgrades `@angular/language-service` to v10.0.0-rc.2.
+This release upgrades `pugjs-angular-language-service` to v10.0.0-rc.2.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1000-rc2-2020-06-01).
 
 # v0.1000.0-rc.0
 
-This release upgrades `@angular/language-service` to v10.0.0-rc.0.
+This release upgrades `pugjs-angular-language-service` to v10.0.0-rc.0.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#1000-rc0-2020-05-21).
 
 # v0.901.9
 
-This release upgrades `@angular/language-service` to v9.1.9.
+This release upgrades `pugjs-angular-language-service` to v9.1.9.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#919-2020-05-20).
 
 # v0.901.8
 
-This release upgrades `@angular/language-service` to v9.1.8.
+This release upgrades `pugjs-angular-language-service` to v9.1.8.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#918-2020-05-20).
 
 # v0.901.7
 
-This release upgrades `@angular/language-service` to v9.1.7.
+This release upgrades `pugjs-angular-language-service` to v9.1.7.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#917-2020-05-13).
 
 # v0.901.6
 
-This release upgrades `@angular/language-service` to v9.1.6.
+This release upgrades `pugjs-angular-language-service` to v9.1.6.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#916-2020-05-08).
 
 # v0.901.5
 
-This release upgrades `@angular/language-service` to v9.1.5.
+This release upgrades `pugjs-angular-language-service` to v9.1.5.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#915-2020-05-07).
 
 # v0.901.4
 
-This release upgrades `@angular/language-service` to v9.1.4.
+This release upgrades `pugjs-angular-language-service` to v9.1.4.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#914-2020-04-29).
 
 Bug fixes:
@@ -589,7 +589,7 @@ Bug fixes:
 
 # v0.901.3
 
-This release upgrades `@angular/language-service` to v9.1.3.
+This release upgrades `pugjs-angular-language-service` to v9.1.3.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#913-2020-04-22).
 
 Bug fixes:
@@ -597,12 +597,12 @@ Bug fixes:
 
 # v0.901.2
 
-This release upgrades `@angular/language-service` to v9.1.2.
+This release upgrades `pugjs-angular-language-service` to v9.1.2.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#912-2020-04-15).
 
 # v0.901.1
 
-This release upgrades `@angular/language-service` to v9.1.1.
+This release upgrades `pugjs-angular-language-service` to v9.1.1.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#911-2020-04-07).
 
 Bug fixes:
@@ -612,7 +612,7 @@ Bug fixes:
 
 # v0.901.0
 
-This release upgrades `@angular/language-service` to v9.1.0.
+This release upgrades `pugjs-angular-language-service` to v9.1.0.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#910-2020-03-25).
 
 New features:
@@ -633,7 +633,7 @@ Bug fixes:
 
 # v0.900.18
 
-This release upgrades `@angular/language-service` to v9.0.7.
+This release upgrades `pugjs-angular-language-service` to v9.0.7.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#907-2020-03-18).
 
 Bug fixes:
@@ -641,7 +641,7 @@ Bug fixes:
 
 # v0.900.17
 
-This release upgrades `@angular/language-service` to v9.0.6.
+This release upgrades `pugjs-angular-language-service` to v9.0.6.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#906-2020-03-10).
 
 Bug fixes:
@@ -650,7 +650,7 @@ Bug fixes:
 
 # v0.900.16
 
-This release upgrades `@angular/language-service` to v9.0.5.
+This release upgrades `pugjs-angular-language-service` to v9.0.5.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#905-2020-03-04).
 
 New features:
@@ -661,7 +661,7 @@ Bug fixes:
 
 # v0.900.15
 
-This release upgrades `@angular/language-service` to v9.0.4.
+This release upgrades `pugjs-angular-language-service` to v9.0.4.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#904-2020-02-27).
 
 Bug fixes:
@@ -676,7 +676,7 @@ Special thanks to @ghaschel, @ayazhafiz, and @dannymcgee.
 
 # v0.900.13
 
-This release upgrades `@angular/language-service` to v9.0.2.
+This release upgrades `pugjs-angular-language-service` to v9.0.2.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#902-2020-02-19).
 
 New features:
@@ -687,7 +687,7 @@ Bug fixes:
 
 # v0.900.12
 
-This release upgrades `@angular/language-service` to v9.0.1.
+This release upgrades `pugjs-angular-language-service` to v9.0.1.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#901-2020-02-12).
 
 Bug fixes:
@@ -695,17 +695,17 @@ Bug fixes:
 
 # v0.900.11
 
-This release upgrades `@angular/language-service` to v9.0.0.
+This release upgrades `pugjs-angular-language-service` to v9.0.0.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-2020-02-06).
 
 # v0.900.10
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.14.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.14.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc14-2020-02-03).
 
 # v0.900.9
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.13.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.13.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc13-2020-02-01).
 
 Bug fixes:
@@ -714,7 +714,7 @@ Bug fixes:
 
 # v0.900.8
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.12.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.12.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc12-2020-01-30).
 
 New features:
@@ -730,7 +730,7 @@ Bug fixes:
 
 # v0.900.7
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.11.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.11.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc11-2020-01-24).
 
 New features:
@@ -742,7 +742,7 @@ Bug fixes:
 
 # v0.900.6
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.10.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.10.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc10-2020-01-22).
 
 It also upgrades `vscode-languageclient` and `vscode-languageserver` to major
@@ -756,7 +756,7 @@ New features:
 
 # v0.900.5
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.9.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.9.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc9-2020-01-15).
 
 It also upgrades `typescript` to v3.7.4.
@@ -779,7 +779,7 @@ Bug fixes:
 
 # v0.900.4
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.8.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.8.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc8-2020-01-08).
 
 New features:
@@ -795,7 +795,7 @@ Bug fixes:
 
 # v0.900.3
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.7.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.7.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc7-2019-12-18).
 
 New features:
@@ -810,7 +810,7 @@ Bug fixes:
 
 # v0.900.2
 
-This release upgrades `@angular/language-service` to v9.0.0-rc.6.
+This release upgrades `pugjs-angular-language-service` to v9.0.0-rc.6.
 For a complete change log see [here](https://github.com/angular/angular/blob/main/CHANGELOG.md#900-rc6-2019-12-11).
 
 Bug fixes:
@@ -840,6 +840,6 @@ significant performance improvements.
 New features:
 - Added "go to definition" for `templateUrl` and `styleUrls`.
 - Hover tooltip now shows the `NgModule` a directive is declared in.
-- Added `angular.ngdk` config for specifying location of `@angular/language-service`.
+- Added `angular.ngdk` config for specifying location of `pugjs-angular-language-service`.
 - Added vscode command to restart the extension.
 - Display loading indicator while project is loading.

@@ -179,7 +179,7 @@ export class ServerHost implements ts.server.ServerHost {
   }
 
   require(initialPath: string, moduleName: string): ts.server.RequireResult {
-    if (moduleName !== '@angular/language-service') {
+    if (moduleName !== 'pugjs-angular-language-service') {
       return {
         module: undefined,
         error: new Error(`Angular server will not load plugin '${moduleName}'.`),

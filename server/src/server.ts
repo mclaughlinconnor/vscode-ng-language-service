@@ -40,7 +40,7 @@ function main() {
     host,
     logger,
     // TypeScript allows only package names as plugin names.
-    ngPlugin: '@angular/language-service',
+    ngPlugin: 'pugjs-angular-language-service',
     resolvedNgLsPath: ng.resolvedPath,
     ivy: isG3 ? true : options.ivy,
     disableAutomaticNgcc: options.disableAutomaticNgcc || options.untrustedWorkspace,

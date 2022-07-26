@@ -66,9 +66,9 @@ let g:clang_format#command = '<PATH_TO_REPOSITORY>/node_modules/.bin/clang-forma
 ## Test Local Changes in VSCode
 
 Any changes made to the code in this repository or the upstream
-`@angular/language-service` package can be immediately tested out in a
+`pugjs-angular-language-service` package can be immediately tested out in a
 development version of VSCode. The instructions below explain how to bring up
-a local instance and then install a local version of `@angular/language-service`.
+a local instance and then install a local version of `pugjs-angular-language-service`.
 
 ### Check TypeScript version
 
@@ -97,7 +97,7 @@ attach the debugger in a single step. To do so,
 
 1. Go to Run on the sidebar, select `Client + Server` from the task list
 
-### Install Local `@angular/language-service`
+### Install Local `pugjs-angular-language-service`
 
 If changes are made to the upstream language service package, they can also be
 tested locally. This involves building the NPM package, then updating the server

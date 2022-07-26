@@ -63,7 +63,7 @@ export function isInsideStringLiteral(
  *
  * False positives are OK here. Though this will give some false positives for determining if a
  * position is within an Angular context, i.e. an object like `{template: ''}` that is not inside an
- * `@Component` or `{styleUrls: [someFunction('stringL¦iteral')]}`, the @angular/language-service
+ * `@Component` or `{styleUrls: [someFunction('stringL¦iteral')]}`, the pugjs-angular-language-service
  * will always give us the correct answer. This helper gives us a quick win for optimizing the
  * number of requests we send to the server.
  */

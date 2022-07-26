@@ -46,12 +46,23 @@ const serverConfig = {
   entryPoints: ['dist/server/src/server.js'],
   outfile: 'dist/npm/server/index.js',
   external: [
+    '@angular/compiler',
     'fs',
     'path',
+    'pugjs-angular-cli',
+    'pugjs-angular-language-service',
+    'pugjs-language-service',
+    'pug-lexer',
+    'pug-parser',
+    'typescript',
     'typescript/lib/tsserverlibrary',
+    '@volar/source-map',
+    'vscode-html-languageservice',
+    'vscode-jsonrpc',
+    'vscode-languageclient',
     'vscode-languageserver',
     'vscode-uri',
-    'vscode-jsonrpc',
+    'vscode-uri'
   ],
 };
 
