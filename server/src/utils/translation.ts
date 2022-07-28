@@ -1,8 +1,9 @@
 import * as lsp from 'vscode-languageserver';
-import * as pugLs from '@volar/pug-language-service';
+import * as pugLs from 'pugjs-language-service';
 import {SourceMapBase} from '@volar/source-map';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import {extractOffsetFromSourceMapPosition} from './utils';
+import {SourceMap} from 'pugjs-language-service/out/pugDocument';
 
 export function translateHtmlOffsetToPug(
   originOffset: number,
@@ -22,7 +23,7 @@ export function translatePosition(
   originPosition: lsp.Position,
   originTextDocument: TextDocument,
   targetTextDocument: TextDocument,
-  sourceMap: SourceMapBase,
+  sourceMap: SourceMap,
   sourceMapFunction: 'getSourceRange' | 'getMappedRange'
 ): lsp.Position {
   const originOffset = originTextDocument.offsetAt(
@@ -43,7 +44,7 @@ export function translatePugPositionToHtml(
     originalPosition,
     pugDocument.pugTextDocument,
     pugDocument.htmlTextDocument,
-    pugDocument.sourceMap as SourceMapBase,
+    pugDocument.sourceMap as SourceMap,
     'getMappedRange',
   );
 }
@@ -56,7 +57,7 @@ export function translateHtmlPositionToPug(
     originalPosition,
     pugDocument.htmlTextDocument,
     pugDocument.pugTextDocument,
-    pugDocument.sourceMap as SourceMapBase,
+    pugDocument.sourceMap as SourceMap,
     'getSourceRange',
   );
 }
@@ -69,7 +70,7 @@ export function translateHtmlRangeToPug(
     originalRange,
     pugDocument.htmlTextDocument,
     pugDocument.pugTextDocument,
-    pugDocument.sourceMap as SourceMapBase,
+    pugDocument.sourceMap as SourceMap,
     'getSourceRange',
   );
 }
@@ -78,7 +79,7 @@ export function translateRange(
   originRange: lsp.Range,
   originTextDocument: TextDocument,
   targetTextDocument: TextDocument,
-  sourceMap: SourceMapBase,
+  sourceMap: SourceMap,
   sourceMapFunction: 'getSourceRange' | 'getMappedRange'
 ): lsp.Range {
   const calculateOriginOffset = (position: lsp.Position) => originTextDocument.offsetAt(

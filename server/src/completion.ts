@@ -11,13 +11,13 @@ import * as lsp from 'vscode-languageserver';
 
 import * as utils from './utils/utils';
 
-import * as pugLs from '@volar/pug-language-service';
+import * as pugLs from 'pugjs-language-service';
 import type {Position} from 'vscode-html-languageservice';
 import {TextDocument} from 'vscode-html-languageservice';
-import {NgLanguageService} from '@angular/language-service/api';
+import {NgLanguageService} from 'pugjs-angular-language-service/api';
 const SourceMap = require("@volar/source-map");
 
-// TODO: Move this to `@angular/language-service`.
+// TODO: Move this to `pugjs-angular-language-service`.
 enum CompletionKind {
   attribute = 'attribute',
   htmlAttribute = 'html attribute',

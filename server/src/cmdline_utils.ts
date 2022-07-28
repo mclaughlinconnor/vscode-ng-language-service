@@ -74,7 +74,7 @@ export function generateHelpMessage(argv: string[]) {
     --logFile: Location to log messages. Logging to file is disabled if not provided.
     --logVerbosity: terse|normal|verbose|requestTime. See ts.server.LogLevel.
     --logToConsole: Enables logging to console via 'window/logMessage'. Defaults to false.
-    --ngProbeLocations: Path of @angular/language-service. Required.
+    --ngProbeLocations: Path of pugjs-angular-language-service. Required.
     --tsProbeLocations: Path of typescript. Required.
 
   Additional options supported by vscode-languageserver:

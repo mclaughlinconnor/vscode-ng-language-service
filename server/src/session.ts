@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/language-service/api';
+import {isNgLanguageService, NgLanguageService, PluginConfig} from 'pugjs-angular-language-service/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import * as lsp from 'vscode-languageserver/node';
 import * as htmlLs from 'vscode-html-languageservice';
-import * as pugLs from '@volar/pug-language-service';
+import * as pugLs from 'pugjs-language-service';
 
 import {ServerOptions} from '../common/initialize';
 import {NgccProgressEnd, OpenOutputChannel, ProjectLanguageService, ProjectLoadingFinish, ProjectLoadingStart, SuggestStrictMode} from '../common/notifications';

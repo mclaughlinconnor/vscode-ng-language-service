@@ -122,59 +122,10 @@
     "@angular/core" "^13.0.0 || ^14.0.0-0"
     reflect-metadata "^0.1.13"
 
-"@angular/compiler-cli@file:../angular/dist/packages-dist/compiler-cli":
-  version "14.1.0-next.0"
-  dependencies:
-    "@babel/core" "^7.17.2"
-    "@types/pug" "^2.0.6"
-    "@volar/code-gen" "file:../volar/packages/code-gen"
-    "@volar/pug-language-service" "file:../volar/packages/pug-language-service"
-    "@volar/shared" "file:../volar/packages/shared"
-    "@volar/source-map" "file:../volar/packages/source-map"
-    chokidar "^3.0.0"
-    convert-source-map "^1.5.1"
-    dependency-graph "^0.11.0"
-    magic-string "^0.26.0"
-    pug "^3.0.2"
-    pug-lexer "^5.0.1"
-    pug-parser "^6.0.0"
-    reflect-metadata "^0.1.2"
-    semver "^7.0.0"
-    sourcemap-codec "^1.4.8"
-    tslib "^2.3.0"
-    void-elements "^3.1.0"
-    yargs "^17.2.1"
-
-"@angular/compiler-cli@file:./../angular/dist/packages-dist/compiler-cli":
-  version "14.1.0-next.0"
-  dependencies:
-    "@babel/core" "^7.17.2"
-    "@types/pug" "^2.0.6"
-    "@volar/code-gen" "file:../volar/packages/code-gen"
-    "@volar/pug-language-service" "file:../volar/packages/pug-language-service"
-    "@volar/shared" "file:../volar/packages/shared"
-    "@volar/source-map" "file:../volar/packages/source-map"
-    chokidar "^3.0.0"
-    convert-source-map "^1.5.1"
-    dependency-graph "^0.11.0"
-    magic-string "^0.26.0"
-    pug "^3.0.2"
-    pug-lexer "^5.0.1"
-    pug-parser "^6.0.0"
-    reflect-metadata "^0.1.2"
-    semver "^7.0.0"
-    sourcemap-codec "^1.4.8"
-    tslib "^2.3.0"
-    void-elements "^3.1.0"
-    yargs "^17.2.1"
-
-"@angular/compiler@file:../angular/dist/packages-dist/compiler":
-  version "14.1.0-next.0"
-  dependencies:
-    tslib "^2.3.0"
-
-"@angular/compiler@file:./../angular/dist/packages-dist/compiler":
-  version "14.1.0-next.0"
+"@angular/compiler@14.0.0-next.9":
+  version "14.0.0-next.9"
+  resolved "https://registry.yarnpkg.com/@angular/compiler/-/compiler-14.0.0-next.9.tgz#962f9468bd07ac882483c0bc00ea6934758164a1"
+  integrity sha512-EgwkGqnAhvFgw6RgY9yLGNoGhnPoAxhf17iefCjr/J80GfZA4GnK2Gh4F3F0JIe696YKRbhByPwVCCsMrEz3Lw==
   dependencies:
     tslib "^2.3.0"
 
@@ -222,12 +173,6 @@
     typescript "~4.6.2"
     uuid "^8.3.2"
     yargs "^17.0.0"
-
-"@angular/language-service@file:../angular/dist/packages-dist/language-service":
-  version "14.1.0-next.0"
-
-"@angular/language-service@file:./../angular/dist/packages-dist/language-service":
-  version "14.1.0-next.0"
 
 "@angular/override-rename-ts-plugin@file:override_rename_ts_plugin":
   version "0.0.1"
@@ -1920,69 +1865,32 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@volar/code-gen@0.38.1", "@volar/code-gen@file:../volar/packages/code-gen":
+"@volar/code-gen@0.38.1":
   version "0.38.1"
+  resolved "https://registry.yarnpkg.com/@volar/code-gen/-/code-gen-0.38.1.tgz#0f2957057c92a7f209b5c333d68c80e2a09adf23"
+  integrity sha512-QnEJfCPhPqzhQY/iN7euGoUWphyv4TmN1xK/HEpnXwgqgvIyLk/Ih3rvAFqlP6I5fTaCu6TGf9kZmjw9AlEeMA==
   dependencies:
     "@volar/source-map" "0.38.1"
 
-"@volar/code-gen@^0.37.4":
-  version "0.37.4"
-  resolved "https://registry.yarnpkg.com/@volar/code-gen/-/code-gen-0.37.4.tgz#710f45667a87858597e887ab03234a3296aa3e6e"
-  integrity sha512-d012rSVZyjzSWeqa8+KI8VdlFzL12B0BP6wU3NySkW1HItscU1B5ICyrlol0C395zr57ECPTdBvhw0IVzUBmIQ==
-  dependencies:
-    "@volar/source-map" "0.37.4"
-
-"@volar/pug-language-service@file:../volar/packages/pug-language-service":
+"@volar/shared@0.38.1":
   version "0.38.1"
-  dependencies:
-    "@volar/code-gen" "0.38.1"
-    "@volar/shared" "0.38.1"
-    "@volar/source-map" "0.38.1"
-    "@volar/transforms" "0.38.1"
-    pug-lexer "^5.0.1"
-    pug-parser "^6.0.0"
-    void-elements "^3.1.0"
-    vscode-languageserver-textdocument "^1.0.4"
-    vscode-languageserver-types "^3.17.1"
-
-"@volar/pug-language-service@file:./../volar/packages/pug-language-service":
-  version "0.38.1"
-  dependencies:
-    "@volar/code-gen" "0.38.1"
-    "@volar/shared" "0.38.1"
-    "@volar/source-map" "0.38.1"
-    "@volar/transforms" "0.38.1"
-    pug-lexer "^5.0.1"
-    pug-parser "^6.0.0"
-    void-elements "^3.1.0"
-    vscode-languageserver-textdocument "^1.0.4"
-    vscode-languageserver-types "^3.17.1"
-
-"@volar/shared@0.38.1", "@volar/shared@file:../volar/packages/shared":
-  version "0.38.1"
+  resolved "https://registry.yarnpkg.com/@volar/shared/-/shared-0.38.1.tgz#2856d1717ffb1da2cb772b69b4bfa74f2e2d1c32"
+  integrity sha512-vQFe57QbGWOeSG3lQzUtV5UBI55vJK8NeGu6PIf81jEen1DC2NoRUrwO3VHI9tNdEaW87JDOitW/chCQTzC68g==
   dependencies:
     upath "^2.0.1"
     vscode-languageserver-protocol "^3.17.1"
     vscode-languageserver-textdocument "^1.0.4"
     vscode-uri "^3.0.3"
 
-"@volar/shared@^0.37.4":
-  version "0.37.4"
-  resolved "https://registry.yarnpkg.com/@volar/shared/-/shared-0.37.4.tgz#397b2491278265349d9227e0e21ba9deda9f98e9"
-  integrity sha512-A4uxNOy5CY96nzbcis4egSt8H0sR+Cjq/2mfWsQJdMjRC0t2ixeYrLj6Y8QraJxo2ZdHZQnSWZpIMpfEBSSwSQ==
-  dependencies:
-    upath "^2.0.1"
-    vscode-languageserver-protocol "^3.17.1"
-    vscode-languageserver-textdocument "^1.0.4"
-    vscode-uri "^3.0.3"
+"@volar/source-map@0.38.1":
+  version "0.38.1"
+  resolved "https://registry.yarnpkg.com/@volar/source-map/-/source-map-0.38.1.tgz#2ddc906e29b488ab48687872ff33196e4bddf05f"
+  integrity sha512-1DoB8BYTle81DdLChnurYteN208qvsfz4IgwjH6T2YcnBtUvtscxMOwg0bfQJskfoLrJ5gESBvEpU8tWsEVyrQ==
 
-"@volar/source-map@0.37.4", "@volar/source-map@^0.37.4":
+"@volar/source-map@^0.37.4":
   version "0.37.4"
   resolved "https://registry.yarnpkg.com/@volar/source-map/-/source-map-0.37.4.tgz#0b4c5672bde25864dce60b700bd6b77b17ba9951"
   integrity sha512-mYGLfHGO/g4Y7+Fpcpp0Sw7tr/MLAXd/XQ/H5NB14KVY/0faRYanAYfVL6X95gofMrE8wacVF0wHPscS4EJJHA==
-
-"@volar/source-map@0.38.1", "@volar/source-map@file:../volar/packages/source-map":
-  version "0.38.1"
 
 "@volar/transforms@0.38.1":
   version "0.38.1"
@@ -6427,6 +6335,53 @@ pug@^3.0.2:
     pug-parser "^6.0.0"
     pug-runtime "^3.0.1"
     pug-strip-comments "^2.0.0"
+
+pugjs-angular-cli@14.1.0-next.0:
+  version "14.1.0-next.0"
+  resolved "https://registry.yarnpkg.com/pugjs-angular-cli/-/pugjs-angular-cli-14.1.0-next.0.tgz#73db51832d2b173c06764819f7d87fd91cc6472f"
+  integrity sha512-uYLEDnKcyHfBQIFygd3ooPKB+iORLPN7bQ//FXNs0SXqUNi5+3E+sSlCLwX5YUVAQFw08Q10Lr0bX0QYjbkU+A==
+  dependencies:
+    "@babel/core" "^7.17.2"
+    "@types/pug" "^2.0.6"
+    "@volar/code-gen" "0.38.1"
+    "@volar/shared" "0.38.1"
+    "@volar/source-map" "0.38.1"
+    chokidar "^3.0.0"
+    convert-source-map "^1.5.1"
+    dependency-graph "^0.11.0"
+    magic-string "^0.26.0"
+    pug "^3.0.2"
+    pug-lexer "^5.0.1"
+    pug-parser "^6.0.0"
+    pug-runtime "^3.0.1"
+    pugjs-language-service "0.38.1-angular"
+    reflect-metadata "^0.1.2"
+    semver "^7.0.0"
+    sourcemap-codec "^1.4.8"
+    tslib "^2.3.0"
+    void-elements "^3.1.0"
+    yargs "^17.2.1"
+
+pugjs-angular-language-service@14.1.0-next.0:
+  version "14.1.0-next.0"
+  resolved "https://registry.yarnpkg.com/pugjs-angular-language-service/-/pugjs-angular-language-service-14.1.0-next.0.tgz#6853faed42efdbd2feb827d948e0bad35bdf4fe3"
+  integrity sha512-Rexfih27HVWTQ2txtpu2x/E88ObdvGmBXfyaucmcd/rxISxWaDt6OGjMSVfZ7YL7XRMfwEjGyLgXWR747ZlGDA==
+
+pugjs-language-service@0.38.1-angular:
+  version "0.38.1-angular"
+  resolved "https://registry.yarnpkg.com/pugjs-language-service/-/pugjs-language-service-0.38.1-angular.tgz#a7224a3f6a592f8bd024599d9b1dd0d6caf8f5a5"
+  integrity sha512-GLGFRDuZhOOEA6S7to+5kJEWwk2BO3iOOnoxksBxM/C0c3gelHZRY5RLB7v1e8sQNWRqUKlHLG+1NYZove9cSw==
+  dependencies:
+    "@volar/code-gen" "0.38.1"
+    "@volar/shared" "0.38.1"
+    "@volar/source-map" "0.38.1"
+    "@volar/transforms" "0.38.1"
+    pug-lexer "^5.0.1"
+    pug-parser "^6.0.0"
+    pug-runtime "^3.0.1"
+    void-elements "^3.1.0"
+    vscode-languageserver-textdocument "^1.0.4"
+    vscode-languageserver-types "^3.17.1"
 
 punycode@^2.1.0, punycode@^2.1.1:
   version "2.1.1"

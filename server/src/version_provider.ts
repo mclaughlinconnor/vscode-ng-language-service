@@ -102,11 +102,11 @@ export function loadEsmModule<T>(modulePath: string|URL): Promise<T> {
 }
 
 /**
- * Resolve `@angular/language-service` from the given locations.
+ * Resolve `pugjs-angular-language-service` from the given locations.
  * @param probeLocations locations from which resolution is attempted
  */
 export function resolveNgLangSvc(probeLocations: string[]): NodeModule {
-  const ngls = '@angular/language-service';
+  const ngls = 'pugjs-angular-language-service';
   return resolveWithMinVersion(ngls, MIN_NG_VERSION, probeLocations, ngls);
 }
 

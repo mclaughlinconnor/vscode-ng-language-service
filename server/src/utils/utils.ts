@@ -10,7 +10,7 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import * as lsp from 'vscode-languageserver';
 import {URI} from 'vscode-uri';
 
-import * as pugLs from '@volar/pug-language-service';
+import * as pugLs from 'pugjs-language-service';
 import * as vscode from 'vscode-languageserver-types';
 import {TextDocument} from 'vscode-languageserver-textdocument';
 import {

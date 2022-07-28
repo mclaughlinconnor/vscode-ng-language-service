@@ -210,13 +210,11 @@
     "test:syntaxes": "yarn compile:syntaxes-test && yarn build:syntaxes && jasmine dist/syntaxes/test/driver.js"
   },
   "dependencies": {
-    "@angular/compiler": "file:./../angular/dist/packages-dist/compiler",
-    "@angular/compiler-cli": "file:./../angular/dist/packages-dist/compiler-cli",
-    "@angular/language-service": "file:./../angular/dist/packages-dist/language-service",
+    "@angular/compiler": "14.0.0-next.9",
+    "pugjs-angular-cli": "14.1.0-next.0",
+    "pugjs-angular-language-service": "14.1.0-next.0",
     "@angular/override-rename-ts-plugin": "file:override_rename_ts_plugin",
-    "@volar/code-gen": "^0.37.4",
-    "@volar/pug-language-service": "file:./../volar/packages/pug-language-service",
-    "@volar/shared": "^0.37.4",
+    "pugjs-language-service": "0.38.1-angular",
     "@volar/source-map": "^0.37.4",
     "pug-lexer": "^5.0.1",
     "pug-parser": "^6.0.0",
