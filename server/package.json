@@ -1,5 +1,5 @@
 {
-  "name": "@angular/language-server",
+  "name": "pugjs-angular-language-server",
   "description": "LSP server for Angular Language Service",
   "version": "14.0.0-next.0",
   "repository": {
