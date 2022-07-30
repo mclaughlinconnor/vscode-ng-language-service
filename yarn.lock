@@ -6362,10 +6362,10 @@ pugjs-angular-cli@14.1.0-next.0:
     void-elements "^3.1.0"
     yargs "^17.2.1"
 
-pugjs-angular-language-service@14.1.0-next.0:
-  version "14.1.0-next.0"
-  resolved "https://registry.yarnpkg.com/pugjs-angular-language-service/-/pugjs-angular-language-service-14.1.0-next.0.tgz#6853faed42efdbd2feb827d948e0bad35bdf4fe3"
-  integrity sha512-Rexfih27HVWTQ2txtpu2x/E88ObdvGmBXfyaucmcd/rxISxWaDt6OGjMSVfZ7YL7XRMfwEjGyLgXWR747ZlGDA==
+pugjs-angular-language-service@14.1.0-next.1:
+  version "14.1.0-next.1"
+  resolved "https://registry.yarnpkg.com/pugjs-angular-language-service/-/pugjs-angular-language-service-14.1.0-next.1.tgz#72bae15042879526943e056720578eb9c634af47"
+  integrity sha512-qjw9inaKQKS46rtvFnVcLCnULMdkd5Qqv8B/jg2259bC2clbM7r9//mkP2/KhEZRgZPYZSXb9x5ZcM3uTp0oIA==
 
 pugjs-language-service@0.38.1-angular:
   version "0.38.1-angular"
