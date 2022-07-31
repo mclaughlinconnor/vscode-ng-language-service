@@ -183,7 +183,7 @@
     ],
     "typescriptServerPlugins": [
       {
-        "name": "@angular/override-rename-ts-plugin",
+        "name": "pugjs-angular-language-server-override-rename-ts-plugin",
         "enableForWorkspaceTypeScriptVersions": true
       }
     ]
@@ -213,7 +213,7 @@
     "@angular/compiler": "14.0.0-next.9",
     "pugjs-angular-cli": "14.1.0-next.0",
     "pugjs-angular-language-service": "14.1.0-next.1",
-    "@angular/override-rename-ts-plugin": "file:override_rename_ts_plugin",
+    "pugjs-angular-language-server-override-rename-ts-plugin": "file:override_rename_ts_plugin",
     "pugjs-language-service": "0.38.1-angular",
     "@volar/source-map": "^0.37.4",
     "pug-lexer": "^5.0.1",
