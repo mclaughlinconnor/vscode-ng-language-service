@@ -2,7 +2,7 @@
   "name": "pugjs-angular-template",
   "displayName": "Angular Language Service",
   "description": "Editor services for Angular templates",
-  "version": "14.2.0",
+  "version": "14.2.0-1",
   "publisher": "Angular",
   "icon": "angular.png",
   "license": "MIT",
@@ -266,6 +266,6 @@
     "url": "https://github.com/angular/vscode-ng-language-service"
   },
   "bin": {
-    "ngserver": "./server/bin/ngserver"
+    "ngserverPUG": "./server/bin/ngserverPUG"
   }
 }

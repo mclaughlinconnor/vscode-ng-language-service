@@ -76,7 +76,7 @@ filegroup(
     name = "npm_files",
     srcs = [
         "README.md",
-        "bin/ngserver",
+        "bin/ngserverPUG",
         "index.js",
         "package_expanded.json",
     ],
