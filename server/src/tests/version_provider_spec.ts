@@ -30,6 +30,6 @@ describe('Node Module Resolver', () => {
   it('should be able to resolve Angular language service', () => {
     const result = resolveNgLangSvc(probeLocations);
     expect(result).toBeDefined();
-    expect(result.resolvedPath.endsWith('@angular/language-service/index.js')).toBeTrue();
+    expect(result.resolvedPath.endsWith('pugjs-angular-language-service/index.js')).toBeTrue();
   });
 });

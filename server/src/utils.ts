@@ -10,6 +10,8 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 import * as lsp from 'vscode-languageserver';
 import {URI} from 'vscode-uri';
 
+import {htmlLocationToPugLocation, parse, State} from 'pug_html_locator_js';
+
 export const isDebugMode = process.env['NG_DEBUG'] === 'true';
 
 enum Scheme {
@@ -237,4 +239,55 @@ function getMappedContextSpan(
   return contextSpanStart && contextSpanEnd ?
       {start: contextSpanStart.pos, length: contextSpanEnd.pos - contextSpanStart.pos} :
       undefined;
+}
+
+export function getPugStateFromScriptInfo(scriptInfo: ts.server.ScriptInfo): State | undefined {
+  if (scriptInfo.fileName.endsWith('.pug')){
+    const documentSnapshot = scriptInfo.getSnapshot()
+    const documentText = documentSnapshot
+    .getText(0, documentSnapshot.getLength());
+
+    return parse(documentText);
+  }
+
+  return;
+}
+
+export function pugOffsetToLspPosition(offset: number, state: State): lsp.Position {
+  let line = 0;
+  let col = 0;
+
+  for (let i = 0; i < offset; i++) {
+    if (state.pugText[i] === '\n') {
+      line++;
+      col = 0;
+    } else {
+      col++;
+    }
+  }
+
+  return lsp.Position.create(line, col);
+}
+
+export function pugOffsetLocationLinks(links: lsp.LocationLink[], state: State, scriptInfo: ts.server.ScriptInfo): lsp.LocationLink[] {
+  return links.map((link) => {
+    if (!link.targetUri.endsWith(".pug")) {
+      return link;
+    }
+    for (const attr of ["targetSelectionRange", "targetRange", "originSelectionRange"] as (keyof Pick<lsp.LocationLink, "targetSelectionRange" | "targetRange" | "originSelectionRange">)[]) {
+      const range = structuredClone(link[attr]);
+      if (!range) {
+        continue;
+      }
+
+      for (const pos of ["start", "end"] as (keyof lsp.Range)[]) {
+        if (!range[pos]) {
+          continue;
+        }
+        range[pos] = pugOffsetToLspPosition(htmlLocationToPugLocation(lspPositionToTsPosition(scriptInfo, range[pos]), state), state)
+        link[attr] = range;
+      }
+    }
+    return link;
+  });
 }
