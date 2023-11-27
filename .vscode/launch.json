@@ -3,15 +3,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Attach",
-      "port": 9229,
-      "request": "attach",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "type": "node"
-    },
-    {
       "type": "extensionHost",
       "request": "launch",
       "name": "Launch Dev Client",
@@ -43,7 +34,7 @@
       "type": "node",
       "request": "attach",
       "name": "Attach to Server",
-      "port": 6009,
+      "port": 9229,
       "restart": true,
       "outFiles": [
         "${workspaceFolder}/bazel-bin/server/src/*.js"

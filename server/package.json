@@ -1,7 +1,7 @@
 {
   "name": "pugjs-angular-language-server",
   "description": "LSP server for Angular Language Service for use with templates written in Pug",
-  "version": "17.0.0-next.0-w",
+  "version": "17.0.0-next.0-az",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/vscode-ng-language-service.git"
@@ -18,6 +18,8 @@
     "npx": "10.2.2",
     "@electron/rebuild": "^3.3.0",
     "node-gyp": "9.4.0",
+    "pug-lexer": "^5.0.1",
+    "pug-parser": "^6.0.0",
     "pug_html_locator_js": "1.0.39",
     "pugjs-angular-language-service": "17.0.0-next.6-s",
     "vscode-html-languageservice": "^4.2.5",

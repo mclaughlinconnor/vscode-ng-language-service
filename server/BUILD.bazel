@@ -50,6 +50,7 @@ esbuild(
         "@electron/rebuild",
         "node-gyp",
         "pug_html_locator_js",
+        "pug-lexer",
         "fs",
         "path",
         "typescript/lib/tsserverlibrary",
