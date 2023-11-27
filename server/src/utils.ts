@@ -11,6 +11,8 @@ import * as lsp from 'vscode-languageserver';
 import {URI} from 'vscode-uri';
 
 import {htmlLocationToPugLocation, parse, State} from 'pug_html_locator_js';
+const pugParser = require('pug-parser');
+const pugLexer = require('pug-lexer');
 
 export const isDebugMode = process.env['NG_DEBUG'] === 'true';
 
@@ -241,13 +243,41 @@ function getMappedContextSpan(
       undefined;
 }
 
-export function getPugStateFromScriptInfo(scriptInfo: ts.server.ScriptInfo): State | undefined {
+export function getPugParseError(scriptInfo: ts.server.ScriptInfo): {code: string; column: number; filename: string; line: number; msg: string;} | undefined {
   if (scriptInfo.fileName.endsWith('.pug')){
     const documentSnapshot = scriptInfo.getSnapshot()
     const documentText = documentSnapshot
     .getText(0, documentSnapshot.getLength());
 
-    return parse(documentText);
+    try {
+      const tokens = pugLexer(documentText, {filename: scriptInfo.fileName});
+      pugParser(tokens, {filename: scriptInfo.fileName, src: documentText});
+    } catch (e) {
+      return e;
+    }
+  }
+
+  return;
+}
+
+export function getPugStateFromScriptInfo(scriptInfo: ts.server.ScriptInfo, logger: (message: string) => void): State | undefined {
+  if (scriptInfo.fileName.endsWith('.pug')){
+    const documentSnapshot = scriptInfo.getSnapshot()
+    const documentText = documentSnapshot
+    .getText(0, documentSnapshot.getLength());
+
+    try {
+      const tokens = pugLexer(documentText, {filename: scriptInfo.fileName});
+      pugParser(tokens, {filename: scriptInfo.fileName, src: documentText});
+    } catch (e) {
+      return;
+    }
+
+    try {
+      return parse(documentText);
+    } catch (e) {
+      logger(documentText + JSON.stringify(e))
+    }
   }
 
   return;

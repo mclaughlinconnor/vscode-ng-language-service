@@ -22,7 +22,7 @@ import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {getHTMLVirtualContent} from './embedded_support';
 import {ServerHost} from './server_host';
 import {documentationToMarkdown} from './text_render';
-import {filePathToUri, getMappedDefinitionInfo, getPugStateFromScriptInfo, isConfiguredProject, isDebugMode, lspPositionToTsPosition, lspRangeToTsPositions, MruTracker, pugOffsetLocationLinks, pugOffsetToLspPosition, tsDisplayPartsToText, tsFileTextChangesToLspWorkspaceEdit, tsTextSpanToLspRange, uriToFilePath} from './utils';
+import {filePathToUri, getMappedDefinitionInfo, getPugParseError, getPugStateFromScriptInfo, isConfiguredProject, isDebugMode, lspPositionToTsPosition, lspRangeToTsPositions, MruTracker, pugOffsetLocationLinks, pugOffsetToLspPosition, tsDisplayPartsToText, tsFileTextChangesToLspWorkspaceEdit, tsTextSpanToLspRange, uriToFilePath} from './utils';
 import {htmlLocationToPugLocation, pugLocationToHtmlLocation} from 'pug_html_locator_js';
 
 export interface SessionOptions {
@@ -207,7 +207,7 @@ export class Session {
       return null;
     }
 
-    const pugState = getPugStateFromScriptInfo(lsInfo.scriptInfo);
+    const pugState = getPugStateFromScriptInfo(lsInfo.scriptInfo, (message: string) => this.error(message));
 
     const codeActions: ts.CodeFixAction[] = [];
     for (const diagnostic of params.context.diagnostics) {
@@ -325,7 +325,7 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -353,7 +353,7 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -397,7 +397,7 @@ export class Session {
     }
 
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -672,7 +672,25 @@ export class Session {
       }
       // Need to send diagnostics even if it's empty otherwise editor state will
       // not be updated.
-      const pugState = getPugStateFromScriptInfo(result.scriptInfo);
+      const pugState = getPugStateFromScriptInfo(result.scriptInfo, (message: string) => this.error(message));
+
+      if (!pugState) {
+        const error = getPugParseError(result.scriptInfo);
+        if (error) {
+          this.connection.sendDiagnostics({
+            uri: filePathToUri(fileName),
+            diagnostics: [lsp.Diagnostic.create(
+              lsp.Range.create(error.line - 1, error.column - 1, error.line - 1, error.column),
+              error.msg,
+              lsp.DiagnosticSeverity.Error,
+              error.code,
+              'pugjs',
+            )]
+          })
+          return;
+        }
+      }
+
       this.connection.sendDiagnostics({
         uri: filePathToUri(fileName),
         diagnostics: diagnostics.map(d => {
@@ -942,7 +960,7 @@ export class Session {
     }
 
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -976,7 +994,7 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -1013,7 +1031,7 @@ export class Session {
       return null;
     }
 
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -1037,7 +1055,7 @@ export class Session {
 
       let range;
       const scriptInfo = lsInfo.scriptInfo;
-      const pugState = getPugStateFromScriptInfo(scriptInfo);
+      const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
       if (pugState) {
         location.textSpan.start = htmlLocationToPugLocation(location.textSpan.start, pugState);
@@ -1068,7 +1086,7 @@ export class Session {
       return null;
     }
 
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -1095,7 +1113,7 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -1226,7 +1244,7 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -1268,7 +1286,7 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
 
@@ -1329,7 +1347,7 @@ export class Session {
       return item;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo);
+    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
     const tsPosition = lspPositionToTsPosition(scriptInfo, position);
 
