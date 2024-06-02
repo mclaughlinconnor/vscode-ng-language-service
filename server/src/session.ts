@@ -15,9 +15,9 @@ import * as lsp from 'vscode-languageserver/node';
 
 import {ServerOptions} from '../../common/initialize';
 import {OpenOutputChannel, ProjectLanguageService, ProjectLoadingFinish, ProjectLoadingStart, SuggestStrictMode} from '../../common/notifications';
-import {GetComponentsWithTemplateFile, GetTcbParams, GetTcbRequest, GetTcbResponse, GetTemplateLocationForComponent, GetTemplateLocationForComponentParams, IsInAngularProject, IsInAngularProjectParams} from '../../common/requests';
+import {GetComponentsWithTemplateFile, GetTagCompletions, GetTagCompletionsParams, GetTcbParams, GetTcbRequest, GetTcbResponse, GetTemplateLocationForComponent, GetTemplateLocationForComponentParams, IsInAngularProject, IsInAngularProjectParams} from '../../common/requests';
 
-import {readNgCompletionData, tsCompletionEntryToLspCompletionItem} from './completion';
+import {readNgCompletionData, tsCompletionEntryToLspCompletionItem, tsPositionlessCompletionEntryToLspCompletionItem} from './completion';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {getHTMLVirtualContent} from './embedded_support';
 import {ServerHost} from './server_host';
@@ -198,6 +198,7 @@ export class Session {
     conn.onSignatureHelp(p => this.onSignatureHelp(p));
     conn.onCodeAction(p => this.onCodeAction(p));
     conn.onCodeActionResolve(p => this.onCodeActionResolve(p));
+    conn.onRequest(GetTagCompletions, p => this.onGetTagCompletions(p));
   }
 
   private onCodeAction(params: lsp.CodeActionParams): lsp.CodeAction[]|null {
@@ -1381,6 +1382,22 @@ export class Session {
     };
     return item;
   }
+
+  private onGetTagCompletions(params: GetTagCompletionsParams): lsp.CompletionItem[]|null {
+    const lsInfo = this.getLSAndScriptInfo(params.textDocument);
+    if (lsInfo === null) {
+      return null;
+    }
+
+    const {languageService, scriptInfo} = lsInfo;
+    const completions = languageService.getTagCompletions(scriptInfo.fileName)
+    if (!completions) {
+      return null
+    }
+
+    return completions.entries.map((e) => tsPositionlessCompletionEntryToLspCompletionItem(e, scriptInfo));
+  }
+
 
   /**
    * Show an error message in the remote console and log to file.
