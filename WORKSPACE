@@ -67,11 +67,6 @@ esbuild_register_toolchains(
 load("@rules_nodejs//nodejs:repositories.bzl", "nodejs_register_toolchains")
 
 nodejs_register_toolchains(
-    node_repositories = {
-        "20.8.0-darwin_amd64": ("node-v20.8.0-darwin-x64.tar.gz", "node-v20.8.0-darwin-x64", "a6f6b573ea656c149956f69f35e04ebb242b945d59972bea2e96a944bbf50ad1"),
-        "20.8.0-linux_amd64": ("node-v20.8.0-linux-x64.tar.xz", "node-v20.8.0-linux-x64", "66056a2acc368db142b8a9258d0539e18538ae832b3ccb316671b0d35cb7c72c"),
-        "20.8.0-windows_amd64": ("node-v20.8.0-win-x64.zip", "node-v20.8.0-win-x64", "6afd5a7aa126f4e255f041de66c4a608f594190d34dcaba72f7b348d2410ca66"),
-    },
     name = "nodejs",
     node_version = "18.13.0",
 )
