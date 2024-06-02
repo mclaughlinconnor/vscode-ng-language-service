@@ -50,6 +50,24 @@ export interface NgCompletionOriginData {
 }
 
 /**
+ * Information about the origin of an `lsp.CompletionItem`, which is stored in the
+ * `lsp.CompletionItem.data` property.
+ *
+ * On future requests for details about a completion item, this information allows the language
+ * service to determine the context for the original completion request, in order to return more
+ * detailed results.
+ */
+export interface NgPositionlessCompletionOriginData {
+  /**
+   * Used to validate the type of `lsp.CompletionItem.data` is correct, since that field is type
+   * `any`.
+   */
+  kind: 'ngCompletionOriginData';
+
+  filePath: string;
+}
+
+/**
  * Extract `NgCompletionOriginData` from an `lsp.CompletionItem` if present.
  */
 export function readNgCompletionData(item: lsp.CompletionItem): NgCompletionOriginData|null {
@@ -136,6 +154,44 @@ export function tsCompletionEntryToLspCompletionItem(
     filePath: scriptInfo.fileName,
     position,
   } as NgCompletionOriginData;
+  return item;
+}
+
+/**
+ * Convert ts.CompletionEntry to LSP Completion Item.
+ * @param entry completion entry
+ * @param position position where completion is requested.
+ * @param scriptInfo
+ */
+export function tsPositionlessCompletionEntryToLspCompletionItem(
+  entry: ts.CompletionEntry, scriptInfo: ts.server.ScriptInfo
+): lsp.CompletionItem {
+  const item = lsp.CompletionItem.create(entry.name);
+  // Even though `entry.kind` is typed as ts.ScriptElementKind, it's
+  // really Angular's CompletionKind. This is because ts.ScriptElementKind does
+  // not sufficiently capture the HTML entities.
+  // This is a limitation of being a tsserver plugin.
+  const kind = entry.kind as unknown as CompletionKind;
+  item.kind = ngCompletionKindToLspCompletionItemKind(kind);
+  item.detail = entry.kind;
+  item.sortText = entry.sortText;
+  // Text that actually gets inserted to the document. It could be different
+  // from 'entry.name'. For example, a method name could be 'greet', but the
+  // insertText is 'greet()'.
+  item.label = entry.insertText || entry.name;
+
+  // If the user enables the config `includeAutomaticOptionalChainCompletions`, the `insertText`
+  // range will include the dot. the `insertText` should be assigned to the `filterText` to filter
+  // the completion items.
+  item.filterText = entry.insertText;
+  if (entry.isSnippet) {
+    item.insertTextFormat = lsp.InsertTextFormat.Snippet;
+  }
+
+  item.data = {
+    kind: 'ngCompletionOriginData',
+    filePath: scriptInfo.fileName,
+  } as NgPositionlessCompletionOriginData;
   return item;
 }
 

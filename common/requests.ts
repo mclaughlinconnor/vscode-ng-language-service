@@ -46,3 +46,10 @@ export const IsInAngularProject =
 export interface IsInAngularProjectParams {
   textDocument: lsp.TextDocumentIdentifier;
 }
+
+export interface GetTagCompletionsParams {
+  textDocument: lsp.TextDocumentIdentifier;
+}
+
+export const GetTagCompletions =
+  new lsp.RequestType<GetTagCompletionsParams, lsp.CompletionItem[]|null, /* error */ void>('cm/getTagCompletion');
