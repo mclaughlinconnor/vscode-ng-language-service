@@ -21,7 +21,7 @@
     "pug-lexer": "^5.0.1",
     "pug-parser": "^6.0.0",
     "pug_html_locator_js": "1.0.39",
-    "pugjs-angular-language-service": "18.2.0-s",
+    "pugjs-angular-language-service": "18.2.0-a",
     "vscode-html-languageservice": "^4.2.5",
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageserver": "7.0.0",

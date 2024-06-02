@@ -244,7 +244,7 @@
     "pug-lexer": "^5.0.1",
     "pug-parser": "^6.0.0",
     "pug_html_locator_js": "1.0.39",
-    "pugjs-angular-language-service": "17.0.0-next.6-s",
+    "pugjs-angular-language-service": "18.1.0-next.0-b",
     "typescript": "5.4.5",
     "universalify": "^2.0.0",
     "vscode-html-languageservice": "^4.2.5",
@@ -282,7 +282,7 @@
     "url": "https://github.com/angular/vscode-ng-language-service"
   },
   "resolutions": {
-    "@angular/compiler-cli": "npm:pugjs-angular-cli@17.0.0-next.6"
+    "@angular/compiler-cli": "npm:pugjs-angular-cli@18.1.0-next.0-a"
   },
   "packageManager": "yarn@3.6.3"
 }
