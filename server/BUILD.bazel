@@ -46,6 +46,10 @@ esbuild(
     config = "esbuild.mjs",
     entry_point = "//server/src:server.js",
     external = [
+        "npx",
+        "@electron/rebuild",
+        "node-gyp",
+        "pug_html_locator_js",
         "fs",
         "path",
         "typescript/lib/tsserverlibrary",

@@ -1,7 +1,7 @@
 {
-  "name": "@angular/language-server",
-  "description": "LSP server for Angular Language Service",
-  "version": "0.0.0-PLACEHOLDER",
+  "name": "pugjs-angular-language-server",
+  "description": "LSP server for Angular Language Service for use with templates written in Pug",
+  "version": "18.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/vscode-ng-language-service.git"
@@ -15,7 +15,11 @@
     "ngserver": "./bin/ngserver"
   },
   "dependencies": {
-    "@angular/language-service": "18.2.0-rc.0",
+    "npx": "10.2.2",
+    "@electron/rebuild": "^3.3.0",
+    "node-gyp": "9.4.0",
+    "pug_html_locator_js": "1.0.39",
+    "pugjs-angular-language-service": "18.2.0-s",
     "vscode-html-languageservice": "^4.2.5",
     "vscode-jsonrpc": "6.0.0",
     "vscode-languageserver": "7.0.0",
@@ -24,8 +28,5 @@
   },
   "devDependencies": {
     "test": "3.3.0"
-  },
-  "publishConfig": {
-    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }

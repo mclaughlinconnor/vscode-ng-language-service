@@ -11,7 +11,10 @@ ts_project(
         "//server:__subpackages__",
     ],
     deps = [
-        "//:node_modules/@angular/language-service",
+        "//:node_modules/@electron/rebuild",
+        "//:node_modules/node-gyp",
+        "//:node_modules/pug_html_locator_js",
+        "//:node_modules/pugjs-angular-language-service",
         "//:node_modules/@types/node",
         "//:node_modules/typescript",
         "//:node_modules/vscode-html-languageservice",
