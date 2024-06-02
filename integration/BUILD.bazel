@@ -29,6 +29,8 @@ ts_project(
         "//:node_modules/vscode-jsonrpc",
         "//:node_modules/vscode-languageserver-protocol",
         "//:node_modules/vscode-uri",
+        "//:node_modules/pug_html_locator_js",
+        "//:node_modules/node-gyp",
         "//common",
     ],
 )

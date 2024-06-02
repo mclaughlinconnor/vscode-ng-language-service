@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isNgLanguageService, NgLanguageService, PluginConfig} from '@angular/language-service/api';
+import {isNgLanguageService, NgLanguageService, PluginConfig} from 'pugjs-angular-language-service/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {promisify} from 'util';
 import {getLanguageService as getHTMLLanguageService} from 'vscode-html-languageservice';
@@ -22,7 +22,8 @@ import {tsDiagnosticToLspDiagnostic} from './diagnostic';
 import {getHTMLVirtualContent} from './embedded_support';
 import {ServerHost} from './server_host';
 import {documentationToMarkdown} from './text_render';
-import {filePathToUri, getMappedDefinitionInfo, isConfiguredProject, isDebugMode, lspPositionToTsPosition, lspRangeToTsPositions, MruTracker, tsDisplayPartsToText, tsFileTextChangesToLspWorkspaceEdit, tsTextSpanToLspRange, uriToFilePath} from './utils';
+import {filePathToUri, getMappedDefinitionInfo, getPugStateFromScriptInfo, isConfiguredProject, isDebugMode, lspPositionToTsPosition, lspRangeToTsPositions, MruTracker, pugOffsetLocationLinks, pugOffsetToLspPosition, tsDisplayPartsToText, tsFileTextChangesToLspWorkspaceEdit, tsTextSpanToLspRange, uriToFilePath} from './utils';
+import {htmlLocationToPugLocation, pugLocationToHtmlLocation} from 'pug_html_locator_js';
 
 export interface SessionOptions {
   host: ServerHost;
@@ -206,16 +207,48 @@ export class Session {
       return null;
     }
 
+    const pugState = getPugStateFromScriptInfo(lsInfo.scriptInfo);
+
     const codeActions: ts.CodeFixAction[] = [];
     for (const diagnostic of params.context.diagnostics) {
       const errorCode = diagnostic.code;
       if (typeof errorCode !== 'number') {
         continue;
       }
+
+      if (pugState) {
+        diagnostic.range.start = pugOffsetToLspPosition(pugLocationToHtmlLocation(lspPositionToTsPosition(lsInfo.scriptInfo, diagnostic.range.start), pugState), pugState);
+        diagnostic.range.end = pugOffsetToLspPosition(pugLocationToHtmlLocation(lspPositionToTsPosition(lsInfo.scriptInfo, diagnostic.range.end), pugState), pugState);
+      }
+
       const start = lspPositionToTsPosition(lsInfo.scriptInfo, diagnostic.range.start);
       const end = lspPositionToTsPosition(lsInfo.scriptInfo, diagnostic.range.end);
       const codeActionsForDiagnostic = lsInfo.languageService.getCodeFixesAtPosition(
           filePath, start, end, [errorCode], defaultFormatOptions, defaultPreferences);
+
+      if (!pugState) {
+        codeActions.push(...codeActionsForDiagnostic);
+        continue;
+      }
+
+      for (const action of codeActionsForDiagnostic) {
+        for (const change of action.changes) {
+          if (!change.fileName.endsWith(".pug")) {
+            continue;
+          }
+
+          for (const textChange of change.textChanges) {
+            if (textChange.span && pugState) {
+              const htmlStart = textChange.span.start
+              textChange.span.start = htmlLocationToPugLocation(textChange.span.start, pugState);
+              if (textChange.span.length !== undefined) {
+                textChange.span.length = htmlLocationToPugLocation(htmlStart + textChange.span.length, pugState) - textChange.span.start;
+              }
+            }
+          }
+        }
+      }
+
       codeActions.push(...codeActionsForDiagnostic);
     }
 
@@ -292,7 +325,11 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const response = languageService.getTcb(scriptInfo.fileName, offset);
     if (response === undefined) {
       return null;
@@ -316,7 +353,11 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const documentSpan =
         languageService.getTemplateLocationForComponent(scriptInfo.fileName, offset);
     if (documentSpan === undefined) {
@@ -356,8 +397,11 @@ export class Session {
     }
 
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
 
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const help = languageService.getSignatureHelpItems(scriptInfo.fileName, offset, undefined);
     if (help === undefined) {
       return null;
@@ -401,7 +445,7 @@ export class Session {
   }
 
   private onCodeLens(params: lsp.CodeLensParams): lsp.CodeLens[]|null {
-    if (!params.textDocument.uri.endsWith('.html') || !this.isInAngularProject(params)) {
+    if (!(params.textDocument.uri.endsWith('.html') || params.textDocument.uri.endsWith('.pug')) || !this.isInAngularProject(params)) {
       return null;
     }
     const position = lsp.Position.create(0, 0);
@@ -628,9 +672,23 @@ export class Session {
       }
       // Need to send diagnostics even if it's empty otherwise editor state will
       // not be updated.
+      const pugState = getPugStateFromScriptInfo(result.scriptInfo);
       this.connection.sendDiagnostics({
         uri: filePathToUri(fileName),
-        diagnostics: diagnostics.map(d => tsDiagnosticToLspDiagnostic(d, result.scriptInfo)),
+        diagnostics: diagnostics.map(d => {
+          if (!pugState) {
+            return tsDiagnosticToLspDiagnostic(d, result.scriptInfo);
+          }
+
+          if (d.start !== undefined) {
+            const htmlStart = d.start;
+            d.start = htmlLocationToPugLocation(d.start, pugState);
+            if (d.length !== undefined) {
+              d.length = htmlLocationToPugLocation(htmlStart + d.length, pugState) - d.start;
+            }
+          }
+          return tsDiagnosticToLspDiagnostic(d, result.scriptInfo);
+        }),
       });
       if (this.diagnosticsTimeout) {
         // There is a pending request to check diagnostics for all open files,
@@ -858,9 +916,14 @@ export class Session {
       return lsp.FoldingRange.create(range.start.line, endLine);
     });
 
+    if (scriptInfo.path.endsWith('pug')) {
+      return null;
+    }
+
     if (!params.textDocument.uri?.endsWith('ts')) {
       return angularFoldingRanges;
     }
+
     const sf = this.getDefaultProjectForScriptInfo(scriptInfo)?.getSourceFile(scriptInfo.path);
     if (sf === undefined) {
       return null;
@@ -877,8 +940,13 @@ export class Session {
     if (lsInfo === null) {
       return null;
     }
+
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const definition = languageService.getDefinitionAndBoundSpan(scriptInfo.fileName, offset);
     if (!definition || !definition.definitions) {
       return null;
@@ -892,7 +960,13 @@ export class Session {
     }
 
     const originSelectionRange = tsTextSpanToLspRange(scriptInfo, definition.textSpan);
-    return this.tsDefinitionsToLspLocationLinks(definition.definitions, originSelectionRange);
+    const links = this.tsDefinitionsToLspLocationLinks(definition.definitions, originSelectionRange);
+
+    if (!pugState) {
+      return links;
+    }
+
+    return pugOffsetLocationLinks(links, pugState, scriptInfo);
   }
 
   private onTypeDefinition(params: lsp.TextDocumentPositionParams):
@@ -902,7 +976,11 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const definitions = languageService.getTypeDefinitionAtPosition(scriptInfo.fileName, offset);
     if (!definitions) {
       return null;
@@ -915,7 +993,13 @@ export class Session {
       return this.tsDefinitionsToLspLocations(definitions);
     }
 
-    return this.tsDefinitionsToLspLocationLinks(definitions);
+    const links = this.tsDefinitionsToLspLocationLinks(definitions);
+
+    if (!pugState) {
+      return links;
+    }
+
+    return pugOffsetLocationLinks(links, pugState, scriptInfo);
   }
 
   private onRenameRequest(params: lsp.RenameParams): lsp.WorkspaceEdit|null {
@@ -929,7 +1013,11 @@ export class Session {
       return null;
     }
 
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const renameLocations = languageService.findRenameLocations(
         scriptInfo.fileName, offset, /*findInStrings*/ false, /*findInComments*/ false);
     if (renameLocations === undefined) {
@@ -937,18 +1025,31 @@ export class Session {
     }
 
     const changes = renameLocations.reduce((changes, location) => {
-      let uri: lsp.URI = filePathToUri(location.fileName);
-      if (changes[uri] === undefined) {
+      let uri = filePathToUri(location.fileName);
+      if (changes[uri] === void 0) {
         changes[uri] = [];
       }
       const fileEdits = changes[uri];
-
       const lsInfo = this.getLSAndScriptInfo(location.fileName);
       if (lsInfo === null) {
         return changes;
       }
-      const range = tsTextSpanToLspRange(lsInfo.scriptInfo, location.textSpan);
-      fileEdits.push({range, newText: params.newName});
+
+      let range;
+      const scriptInfo = lsInfo.scriptInfo;
+      const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+      if (pugState) {
+        location.textSpan.start = htmlLocationToPugLocation(location.textSpan.start, pugState);
+        const start = pugOffsetToLspPosition(location.textSpan.start, pugState);
+        const end = pugOffsetToLspPosition(location.textSpan.start + location.textSpan.length, pugState);
+
+        range = lsp.Range.create(start.line, start.character, end.line, end.character);
+      } else {
+        range = tsTextSpanToLspRange(lsInfo.scriptInfo, location.textSpan);
+      }
+
+      fileEdits.push({ range, newText: params.newName });
       return changes;
     }, {} as {[uri: string]: lsp.TextEdit[]});
 
@@ -967,11 +1068,20 @@ export class Session {
       return null;
     }
 
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const renameInfo = languageService.getRenameInfo(scriptInfo.fileName, offset);
     if (!renameInfo.canRename) {
       return null;
     }
+
+    if (pugState) {
+      renameInfo.triggerSpan.start = htmlLocationToPugLocation(renameInfo.triggerSpan.start, pugState);
+    }
+
     const range = tsTextSpanToLspRange(scriptInfo, renameInfo.triggerSpan);
     return {
       range,
@@ -985,13 +1095,22 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const references = languageService.getReferencesAtPosition(scriptInfo.fileName, offset);
     if (references === undefined) {
       return null;
     }
     return references.map(ref => {
       const scriptInfo = this.projectService.getScriptInfo(ref.fileName);
+
+      if (pugState) {
+        ref.textSpan.start = htmlLocationToPugLocation(ref.textSpan.start, pugState);
+      }
+
       const range = scriptInfo ? tsTextSpanToLspRange(scriptInfo, ref.textSpan) : EMPTY_RANGE;
       const uri = filePathToUri(ref.fileName);
       return {uri, range};
@@ -1107,12 +1226,21 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const info = languageService.getQuickInfoAtPosition(scriptInfo.fileName, offset);
     if (!info) {
       return null;
     }
     const {kind, kindModifiers, textSpan, displayParts, documentation, tags} = info;
+
+    if (pugState) {
+      textSpan.start = htmlLocationToPugLocation(textSpan.start, pugState);
+    }
+
     let desc = kindModifiers ? kindModifiers + ' ' : '';
     if (displayParts && displayParts.length > 0) {
       // displayParts does not contain info about kindModifiers
@@ -1140,7 +1268,11 @@ export class Session {
       return null;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const offset = lspPositionToTsPosition(scriptInfo, params.position);
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
+
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
 
     let options: ts.GetCompletionsAtPositionOptions = {};
     const includeCompletionsWithSnippetText =
@@ -1162,9 +1294,25 @@ export class Session {
     const clientSupportsInsertReplaceCompletion =
         this.clientCapabilities.textDocument?.completion?.completionItem?.insertReplaceSupport ??
         false;
-    return completions.entries.map(
+
+    if (!pugState) {
+      return completions.entries.map(
         (e) => tsCompletionEntryToLspCompletionItem(
             e, params.position, scriptInfo, clientSupportsInsertReplaceCompletion));
+    }
+
+    return completions.entries.map((e) => {
+        if (e.replacementSpan && pugState) {
+            const htmlStart = e.replacementSpan.start
+            e.replacementSpan.start = htmlLocationToPugLocation(e.replacementSpan.start, pugState);
+            if (e.replacementSpan.length !== undefined) {
+                e.replacementSpan.length = htmlLocationToPugLocation(htmlStart + e.replacementSpan.length, pugState) - e.replacementSpan.start;
+            }
+        }
+
+        return tsCompletionEntryToLspCompletionItem(
+            e, pugOffsetToLspPosition(htmlLocationToPugLocation(offset, pugState), pugState), scriptInfo, clientSupportsInsertReplaceCompletion)
+    });
   }
 
   private onCompletionResolve(item: lsp.CompletionItem): lsp.CompletionItem {
@@ -1181,14 +1329,21 @@ export class Session {
       return item;
     }
     const {languageService, scriptInfo} = lsInfo;
+    const pugState = getPugStateFromScriptInfo(scriptInfo);
 
-    const offset = lspPositionToTsPosition(scriptInfo, position);
+    const tsPosition = lspPositionToTsPosition(scriptInfo, position);
+
+    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
     const details = languageService.getCompletionEntryDetails(
         filePath, offset, item.insertText ?? item.label, undefined, undefined, undefined,
         undefined);
     if (details === undefined) {
       return item;
     }
+
+    // if (item.textEdit && 'range' in item.textEdit) {
+    //   item.textEdit.range.start = lspPositionToTsPosition(scriptInfo, item.textEdit.range.start)
+    // }
 
     const {kind, kindModifiers, displayParts, documentation, tags} = details;
     let desc = kindModifiers ? kindModifiers + ' ' : '';
