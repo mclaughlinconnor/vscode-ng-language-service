@@ -31758,8 +31758,8 @@ z-schema@~5.0.2:
     prettier: 2.7.1
     pug-lexer: ^5.0.1
     pug-parser: ^6.0.0
-    pug_html_locator_js: 1.0.41
-    pugjs-angular-language-service: 18.1.0-next.0-h
+    pug_html_locator_js: 1.0.42
+    pugjs-angular-language-service: 18.1.0-next.0-i
     rxjs: 6.6.7
     ts-node: ^10.8.1
     tslint: 6.1.3
@@ -33604,21 +33604,21 @@ z-schema@~5.0.2:
   languageName: node
   linkType: hard
 
-"pug_html_locator_js@npm:1.0.41":
-  version: 1.0.41
-  resolution: "pug_html_locator_js@npm:1.0.41"
+"pug_html_locator_js@npm:1.0.42":
+  version: 1.0.42
+  resolution: "pug_html_locator_js@npm:1.0.42"
   dependencies:
     node-gyp: ^9.4.0
     tree-sitter: ^0.20.5
-    tree-sitter-pug: 1.0.2
-  checksum: 082b92ef06c8939e1121a84245f566a8169f7cdd22a0d938cf6747e185a5aae3cd6a6b4093305e7a3efde0c39cffc6a5921f2b5747cf08a92704a256371a7608
+    tree-sitter-pug: 1.0.3
+  checksum: d9ced5e30b36772762160dda105fa61babfceac1c4c5a66ace2ce9fe29077d0102c61c61c7ec5203ef53fbe056da4059d0f78d0bb68e6c83fbb059e5699f66eb
   languageName: node
   linkType: hard
 
-"pugjs-angular-language-service@npm:18.1.0-next.0-h":
-  version: 18.1.0-next.0-h
-  resolution: "pugjs-angular-language-service@npm:18.1.0-next.0-h"
-  checksum: 5948a2f6d3c2cebb337edd8a6db53c83581d0802e4f672e543e9bf5ec7f09bd8e9ea2d7a50cbd4bb2970f250f4533be222694d21082c114eacafb12ac9661d85
+"pugjs-angular-language-service@npm:18.1.0-next.0-i":
+  version: 18.1.0-next.0-i
+  resolution: "pugjs-angular-language-service@npm:18.1.0-next.0-i"
+  checksum: e14fac3d19c1d5f2742d5b7c87398abc9b33c24a29827aee880fcd5ccfe21d8bfabeb53ddd8c73fa7660d419b940a58c21b68b2a815e74c4384a53379ba3db47
   languageName: node
   linkType: hard
 
@@ -35805,13 +35805,13 @@ z-schema@~5.0.2:
   languageName: node
   linkType: hard
 
-"tree-sitter-pug@npm:1.0.2":
-  version: 1.0.2
-  resolution: "tree-sitter-pug@npm:1.0.2"
+"tree-sitter-pug@npm:1.0.3":
+  version: 1.0.3
+  resolution: "tree-sitter-pug@npm:1.0.3"
   dependencies:
     nan: ^2.14.1
     node-gyp: latest
-  checksum: 255b07fa4a59e9146028506484b427a985ba3b55a99b81b8cc528ae437b3a1a96c2ef1c2927d1d2d365f6b5203c1491da0124e76274f43a5fc38f5dbeda707bd
+  checksum: 98d91eed717c92172a61afd32c468c7a2395da074654312f2f7a312a14bd1ce80f78c3841d27e68c0b4a0355208903cd034fcdaa4061d33bf8ba3e82168614a7
   languageName: node
   linkType: hard
 
