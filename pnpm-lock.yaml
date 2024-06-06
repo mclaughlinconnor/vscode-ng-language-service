@@ -39,11 +39,11 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       pug_html_locator_js:
-        specifier: 1.0.41
-        version: 1.0.41
+        specifier: 1.0.42
+        version: 1.0.42
       pugjs-angular-language-service:
-        specifier: 18.1.0-next.0-h
-        version: 18.1.0-next.0-h
+        specifier: 18.1.0-next.0-i
+        version: 18.1.0-next.0-i
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -7596,19 +7596,19 @@ packages:
       token-stream: 1.0.0
     dev: false
 
-  /pug_html_locator_js@1.0.41:
-    resolution: {integrity: sha512-ENuow94WfqHr6WHFX3RsfHhhnTfXUjIEolEzsiz4h9jGIUoiQthW4MzTFiadNifoHCmCA88ww4sDxJg4s+3ytw==}
+  /pug_html_locator_js@1.0.42:
+    resolution: {integrity: sha512-Bm04vWYWec1Pvp1HXNrjBS/waP49oFkZqdV7E04QP+DfPgfEl8VsjRS9zODwP6a/pozpUqD7Hu7mlwkWKgvTHg==}
     dependencies:
       node-gyp: 9.4.1
       tree-sitter: 0.20.6
-      tree-sitter-pug: 1.0.2
+      tree-sitter-pug: 1.0.3
     transitivePeerDependencies:
       - bluebird
       - supports-color
     dev: false
 
-  /pugjs-angular-language-service@18.1.0-next.0-h:
-    resolution: {integrity: sha512-tI19p1oGADYiL91Lv8accIaEiudKAuNJOiqvAwwWffRbMjLcMc7GWKkCmTEzM+EzJqUdh8EDhXr9n1+nCwyjBQ==}
+  /pugjs-angular-language-service@18.1.0-next.0-i:
+    resolution: {integrity: sha512-xRYzsQRIO3gYPz8jrYQe07v5TLO7O7FG9FurLyNnnyMOZwTOOvmDTrUHl2gok0KfdJrVyR4BNXzBRY0fCBhyzQ==}
     engines: {node: ^18.13.0 || >=20.9.0}
     dev: false
 
@@ -8866,8 +8866,8 @@ packages:
     hasBin: true
     dev: true
 
-  /tree-sitter-pug@1.0.2:
-    resolution: {integrity: sha512-2834fltiGVWbJ9fIx4xKRVH6mFdIu5HbA3ZCOTRe7Ut7wK60BYP6iORUao4U7ogyrVV+VhOixl1qJOgTjGe0UQ==}
+  /tree-sitter-pug@1.0.3:
+    resolution: {integrity: sha512-E3io0X6/npsAsO4JJtuF5BzQ/YRiR+j+AcDVsTtr76v1/YV3V/frKFEEod2BA23AR53/5yovZjCIO6wIXmzKRA==}
     requiresBuild: true
     dependencies:
       nan: 2.19.0
