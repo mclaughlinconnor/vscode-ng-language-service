@@ -7,6 +7,7 @@
  */
 
 import * as lsp from 'vscode-languageserver-protocol';
+import * as ts from 'typescript';
 
 export const GetComponentsWithTemplateFile = new lsp.RequestType<
     GetComponentsWithTemplateFileParams, lsp.Location[],
@@ -50,6 +51,22 @@ export interface IsInAngularProjectParams {
 export interface GetTagCompletionsParams {
   textDocument: lsp.TextDocumentIdentifier;
 }
+export interface GetAttrCompletionsParams {
+  textDocument: lsp.TextDocumentIdentifier;
+  position: lsp.Position;
+}
+
+export interface GetPropertyExpressionCompletionParams {
+  textDocument: lsp.TextDocumentIdentifier;
+  position: lsp.Position;
+  options: ts.GetCompletionsAtPositionOptions;
+}
 
 export const GetTagCompletions =
   new lsp.RequestType<GetTagCompletionsParams, lsp.CompletionItem[]|null, /* error */ void>('cm/getTagCompletion');
+
+export const GetAttrCompletions =
+  new lsp.RequestType<GetAttrCompletionsParams, lsp.CompletionItem[]|null, /* error */ void>('cm/getAttrCompletion');
+
+export const GetPropertyExpressionCompletions =
+  new lsp.RequestType<GetPropertyExpressionCompletionParams, lsp.CompletionItem[]|null, /* error */ void>('cm/getPropertyExpressionCompletion');
