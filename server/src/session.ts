@@ -15,7 +15,7 @@ import * as lsp from 'vscode-languageserver/node';
 
 import {ServerOptions} from '../../common/initialize';
 import {ProjectLanguageService, ProjectLoadingFinish, ProjectLoadingStart, SuggestStrictMode} from '../../common/notifications';
-import {GetComponentsWithTemplateFile, GetTagCompletions, GetTagCompletionsParams, GetTcbParams, GetTcbRequest, GetTcbResponse, GetTemplateLocationForComponent, GetTemplateLocationForComponentParams, IsInAngularProject, IsInAngularProjectParams} from '../../common/requests';
+import {GetAttrCompletions, GetAttrCompletionsParams, GetComponentsWithTemplateFile, GetPropertyExpressionCompletions, GetPropertyExpressionCompletionParams, GetTagCompletions, GetTagCompletionsParams, GetTcbParams, GetTcbRequest, GetTcbResponse, GetTemplateLocationForComponent, GetTemplateLocationForComponentParams, IsInAngularProject, IsInAngularProjectParams} from '../../common/requests';
 
 import {readNgCompletionData, tsCompletionEntryToLspCompletionItem, tsPositionlessCompletionEntryToLspCompletionItem} from './completion';
 import {tsDiagnosticToLspDiagnostic} from './diagnostic';
@@ -199,6 +199,8 @@ export class Session {
     conn.onCodeAction(p => this.onCodeAction(p));
     conn.onCodeActionResolve(async p => await this.onCodeActionResolve(p));
     conn.onRequest(GetTagCompletions, p => this.onGetTagCompletions(p));
+    conn.onRequest(GetAttrCompletions, p => this.onGetAttrCompletions(p));
+    conn.onRequest(GetPropertyExpressionCompletions, p => this.onGetPropertyExpressionCompletions(p));
   }
 
   private onCodeAction(params: lsp.CodeActionParams): lsp.CodeAction[]|null {
@@ -1469,6 +1471,37 @@ export class Session {
     return completions.entries.map((e) => tsPositionlessCompletionEntryToLspCompletionItem(e, scriptInfo));
   }
 
+  private onGetAttrCompletions(params: GetAttrCompletionsParams): lsp.CompletionItem[]|null {
+    const lsInfo = this.getLSAndScriptInfo(params.textDocument);
+    if (lsInfo === null) {
+      return null;
+    }
+
+    const {languageService, scriptInfo} = lsInfo;
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+    const completions = languageService.getAttrCompletions(scriptInfo.fileName, tsPosition)
+    if (!completions) {
+      return null
+    }
+
+    return completions.entries.map((e) => tsPositionlessCompletionEntryToLspCompletionItem(e, scriptInfo));
+  }
+
+  private onGetPropertyExpressionCompletions(params: GetPropertyExpressionCompletionParams): lsp.CompletionItem[]|null {
+    const lsInfo = this.getLSAndScriptInfo(params.textDocument);
+    if (lsInfo === null) {
+      return null;
+    }
+
+    const {languageService, scriptInfo} = lsInfo;
+    const tsPosition = lspPositionToTsPosition(scriptInfo, params.position);
+    const completions = languageService.getPropertyExpressionCompletions(scriptInfo.fileName, tsPosition, params.options)
+    if (!completions) {
+      return null
+    }
+
+    return completions.entries.map((e) => tsPositionlessCompletionEntryToLspCompletionItem(e, scriptInfo));
+  }
 
   /**
    * Show an error message in the remote console and log to file.
