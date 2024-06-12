@@ -1350,21 +1350,14 @@ export class Session {
       return item;
     }
     const {languageService, scriptInfo} = lsInfo;
-    const pugState = getPugStateFromScriptInfo(scriptInfo, (message: string) => this.error(message));
 
-    const tsPosition = lspPositionToTsPosition(scriptInfo, position);
-
-    const offset = pugState ? pugLocationToHtmlLocation(tsPosition, pugState) : tsPosition;
+    const offset = lspPositionToTsPosition(scriptInfo, position);
     const details = languageService.getCompletionEntryDetails(
         filePath, offset, item.insertText ?? item.label, undefined, undefined, undefined,
         undefined);
     if (details === undefined) {
       return item;
     }
-
-    // if (item.textEdit && 'range' in item.textEdit) {
-    //   item.textEdit.range.start = lspPositionToTsPosition(scriptInfo, item.textEdit.range.start)
-    // }
 
     const {kind, kindModifiers, displayParts, documentation, tags} = details;
     let desc = kindModifiers ? kindModifiers + ' ' : '';
