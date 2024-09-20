@@ -9374,8 +9374,8 @@ __metadata:
     prettier: 2.7.1
     pug-lexer: ^5.0.1
     pug-parser: ^6.0.0
-    pug_html_locator_js: 1.0.45
-    pugjs-angular-language-service: 18.1.0-next.0-k
+    pug_html_locator_js: 1.0.47
+    pugjs-angular-language-service: 18.1.0-next.0-m
     rxjs: 6.6.7
     ts-node: ^10.8.1
     tslint: 6.1.3
@@ -11216,21 +11216,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pug_html_locator_js@npm:1.0.45":
-  version: 1.0.45
-  resolution: "pug_html_locator_js@npm:1.0.45"
+"pug_html_locator_js@npm:1.0.47":
+  version: 1.0.47
+  resolution: "pug_html_locator_js@npm:1.0.47"
   dependencies:
     node-gyp: ^9.4.0
     tree-sitter: ^0.21.0
     tree-sitter-pug: 1.0.11
-  checksum: 87dd7a3c8e951633e84186f5c439e3dc13b7feb289480ab13193d8fab5a3e4332bd05fed51cfd8ee0bda69db83f3cb9eef62bc24a65c3fe4ec53751d41c5002b
+  checksum: e9023297b899fd40b1ecd4a17b6735fb7e486b39de8d87e6b38435af4b5c79d81081b3d26bc7f98e6c554b7b905526fa4d9e622c06abbacd2cad44f99c032231
   languageName: node
   linkType: hard
 
-"pugjs-angular-language-service@npm:18.1.0-next.0-k":
-  version: 18.1.0-next.0-k
-  resolution: "pugjs-angular-language-service@npm:18.1.0-next.0-k"
-  checksum: db04a4850a1d7775c3e59f35db5a6213d1ec6d923a3b89995ff63bb1758ab9d4d78296225c9e85b5e8f061793e790730c11a34a0a8d920c65767cf74c7c796db
+"pugjs-angular-language-service@npm:18.1.0-next.0-m":
+  version: 18.1.0-next.0-m
+  resolution: "pugjs-angular-language-service@npm:18.1.0-next.0-m"
+  checksum: 91ee9e9b0aef977d26568a579dad0f5ee8392314c4638e2e90d16db551b66b4e11feceebcabefdd81eaf284d568e437ebd46146a82d2f3cf4bf77bd13f3a86da
   languageName: node
   linkType: hard
 
