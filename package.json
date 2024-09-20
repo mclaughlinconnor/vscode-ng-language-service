@@ -164,7 +164,10 @@
       {
         "path": "./syntaxes/template.json",
         "scopeName": "template.ng",
-        "injectTo": ["text.html.derivative", "source.ts"],
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
         "embeddedLanguages": {
           "text.html": "html",
           "source.css": "css",
@@ -174,7 +177,10 @@
       {
         "path": "./syntaxes/template-blocks.json",
         "scopeName": "template.blocks.ng",
-        "injectTo": ["text.html.derivative", "source.ts"],
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ],
         "embeddedLanguages": {
           "text.html": "html",
           "control.block.expression.ng": "javascript",
@@ -184,7 +190,10 @@
       {
         "path": "./syntaxes/let-declaration.json",
         "scopeName": "template.let.ng",
-        "injectTo": ["text.html.derivative", "source.ts"]
+        "injectTo": [
+          "text.html.derivative",
+          "source.ts"
+        ]
       },
       {
         "path": "./syntaxes/template-tag.json",
@@ -232,8 +241,6 @@
     "test:legacy-syntaxes": "yarn compile:syntaxes-test && yarn build:syntaxes && jasmine dist/syntaxes/test/driver.js"
   },
   "dependencies": {
-    "pugjs-angular-language-service": "18.2.0-a",
-    "typescript": "5.5.3",
     "@electron/rebuild": "^3.3.0",
     "fs-extra": "^10.0.0",
     "gauge": "4.0.4",
@@ -244,7 +251,7 @@
     "pug-lexer": "^5.0.1",
     "pug-parser": "^6.0.0",
     "pug_html_locator_js": "1.0.47",
-    "pugjs-angular-language-service": "18.1.0-next.0-m",
+    "pugjs-angular-language-service": "18.2.5-a",
     "typescript": "5.4.5",
     "universalify": "^2.0.0",
     "vscode-html-languageservice": "^4.2.5",
@@ -255,8 +262,8 @@
     "vscode-uri": "3.0.7"
   },
   "devDependencies": {
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#262cb3bb487e8dddb3c404f4f2c8b34a9a1f14c2",
     "@angular/core": "^18.1.0-rc.0",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#262cb3bb487e8dddb3c404f4f2c8b34a9a1f14c2",
     "@bazel/bazelisk": "1.18.0",
     "@bazel/ibazel": "0.16.2",
     "@types/jasmine": "3.10.7",
