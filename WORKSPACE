@@ -216,7 +216,7 @@ npm_translate_lock(
         "path-key@^3.1.0": [""],
         "path-scurry@^1.10.1": [""],
         "prebuild-install@^7.1.1": [""],
-        "pug_html_locator_js@1.0.45": [""],
+        "pug_html_locator_js@1.0.47": [""],
         "pump@^3.0.0": [""],
         "quick-lru@^5.1.1": [""],
         "rc@^1.2.7": [""],
