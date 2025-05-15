@@ -34,7 +34,7 @@
       "type": "node",
       "request": "attach",
       "name": "Attach to Server",
-      "port": 9229,
+      "port": 6009,
       "restart": true,
       "outFiles": [
         "${workspaceFolder}/bazel-bin/server/src/*.js"

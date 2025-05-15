@@ -211,6 +211,7 @@
   },
   "activationEvents": [
     "onLanguage:html",
+    "onLanguage:jade",
     "onLanguage:typescript"
   ],
   "main": "./bazel-bin/client/src/extension",
