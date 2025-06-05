@@ -241,6 +241,7 @@
     "test:legacy-syntaxes": "yarn compile:syntaxes-test && yarn build:syntaxes && jasmine dist/syntaxes/test/driver.js"
   },
   "dependencies": {
+    "@electron/node-gyp": "10.2.0-electron.1",
     "@electron/rebuild": "^3.3.0",
     "fs-extra": "^10.0.0",
     "gauge": "4.0.4",
@@ -289,6 +290,11 @@
     "url": "https://github.com/angular/vscode-ng-language-service"
   },
   "resolutions": {
+    "@electron/node-gyp": "10.2.0-electron.1",
+    "@angular/compiler-cli": "npm:pugjs-angular-cli@18.2.5-a"
+  },
+  "overrides": {
+    "@electron/node-gyp": "10.2.0-electron.1",
     "@angular/compiler-cli": "npm:pugjs-angular-cli@18.2.5-a"
   },
   "packageManager": "yarn@3.6.3"
