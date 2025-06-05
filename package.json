@@ -226,7 +226,6 @@
     "format": "scripts/format.sh",
     "watch": "yarn ibazel build //client:index.js //server:index.js",
     "package": "scripts/build.sh package.json",
-    "postinstall": "electron-rebuild -f -v 18.0.0",
     "test": "yarn bazel test --test_tag_filters=unit_test //...",
     "test:watch": "yarn ibazel test --test_tag_filters=unit_test //...",
     "test:lsp": "yarn bazel test --test_output=streamed //integration/lsp:test",
@@ -251,8 +250,8 @@
     "npx": "10.2.2",
     "pug-lexer": "^5.0.1",
     "pug-parser": "^6.0.0",
-    "pug_html_locator_js": "1.0.47",
-    "pugjs-angular-language-service": "18.2.5-a",
+    "pug_html_locator_js": "1.0.48",
+    "pugjs-angular-language-service": "18.2.5-b",
     "typescript": "5.4.5",
     "universalify": "^2.0.0",
     "vscode-html-languageservice": "^4.2.5",
@@ -290,7 +289,7 @@
     "url": "https://github.com/angular/vscode-ng-language-service"
   },
   "resolutions": {
-    "@angular/compiler-cli": "npm:pugjs-angular-cli@18.1.0-next.0-a"
+    "@angular/compiler-cli": "npm:pugjs-angular-cli@18.2.5-a"
   },
   "packageManager": "yarn@3.6.3"
 }

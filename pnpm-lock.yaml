@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@angular/compiler-cli': npm:pugjs-angular-cli@18.1.0-next.0-a
+  '@angular/compiler-cli': npm:pugjs-angular-cli@18.2.5-a
 
 importers:
 
@@ -39,11 +39,11 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       pug_html_locator_js:
-        specifier: 1.0.47
-        version: 1.0.47
+        specifier: 1.0.48
+        version: 1.0.48
       pugjs-angular-language-service:
-        specifier: 18.2.5-a
-        version: 18.2.5-a
+        specifier: 18.2.5-b
+        version: 18.2.5-b
       typescript:
         specifier: 5.4.5
         version: 5.4.5
@@ -165,7 +165,7 @@ packages:
     resolution: {integrity: sha512-T9lNIR0E1w+VnKeiFJOa34Ru72RCH8Qe113hzzLw8AFz798fP/jv55ujA7GOHCluph4PeqJC9Ed3JSNqRpoAJw==}
     engines: {node: ^14.15.0 || >=16.10.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler-cli': npm:pugjs-angular-cli@18.1.0-next.0-a
+      '@angular/compiler-cli': npm:pugjs-angular-cli@18.2.5-a
       '@angular/localize': ^14.0.0 || ^14.0.0-next || ^14.1.0-next
       '@angular/service-worker': ^14.0.0 || ^14.0.0-next || ^14.1.0-next
       karma: ^6.3.0
@@ -2022,7 +2022,7 @@ packages:
     resolution: {integrity: sha512-MXgzBn4LudIIdffY4X/pAhAAL5wvGRa36ToeYb4Pmfr0GROD2KvtWk6zNGmE1YuP1p9DHXh6ufoJxtHqTGgFVQ==}
     engines: {node: ^14.15.0 || >=16.10.0, npm: ^6.11.0 || ^7.5.6 || >=8.0.0, yarn: '>= 1.13.0'}
     peerDependencies:
-      '@angular/compiler-cli': npm:pugjs-angular-cli@18.1.0-next.0-a
+      '@angular/compiler-cli': npm:pugjs-angular-cli@18.2.5-a
       typescript: '>=4.6.2 <4.8'
       webpack: ^5.54.0
     dependencies:
@@ -6728,7 +6728,7 @@ packages:
     requiresBuild: true
     dependencies:
       node-addon-api: 3.2.1
-      node-gyp-build: 4.8.2
+      node-gyp-build: 4.8.4
     dev: true
     optional: true
 
@@ -6745,12 +6745,8 @@ packages:
     dev: true
     optional: true
 
-  /node-addon-api@7.1.1:
-    resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
-    dev: false
-
-  /node-addon-api@8.1.0:
-    resolution: {integrity: sha512-yBY+qqWSv3dWKGODD6OGE6GnTX7Q2r+4+DfpqxHSHh8x0B4EKP9+wVGLS6U/AM1vxSNNmUEuIV5EGhYwPpfOwQ==}
+  /node-addon-api@8.3.1:
+    resolution: {integrity: sha512-lytcDEdxKjGJPTLEfW4mYMigRezMlyJY8W4wxJK8zE533Jlb8L8dRuObJFWg2P+AuOIxoCgKF+2Oq4d4Zd0OUA==}
     engines: {node: ^18 || ^20 || >= 21}
     dev: false
 
@@ -6765,8 +6761,8 @@ packages:
     engines: {node: '>= 6.13.0'}
     dev: true
 
-  /node-gyp-build@4.8.2:
-    resolution: {integrity: sha512-IRUxE4BVsHWXkV/SFOut4qTlagw2aM8T5/vnTsmrHJvVoKueJHRc/JaFND7QDDc61kLYUJ6qlZM3sqTSyx2dTw==}
+  /node-gyp-build@4.8.4:
+    resolution: {integrity: sha512-LA4ZjwlnUblHVgq0oBF3Jl/6h/Nvs5fzBLwdEF4nuxnFdsfajde4WfxtJr3CaiH+F6ewcIB/q4jQ4UzPyid+CQ==}
     hasBin: true
 
   /node-gyp@9.4.0:
@@ -7738,20 +7734,19 @@ packages:
       token-stream: 1.0.0
     dev: false
 
-  /pug_html_locator_js@1.0.47:
-    resolution: {integrity: sha512-akZWz/ZWaD5xTv6tl9hSkI4nfU26CIpHiF2UKTHMTyMAzIg+MEBPmSv4j3aNr041TxafU6g059mmBkrvPVwWRQ==}
+  /pug_html_locator_js@1.0.48:
+    resolution: {integrity: sha512-h+bYmgq0s58B9oQTGHn5LWsk3I2/HwQ66LFZMop+mXAYnwzWLdn8PMVdM8cA0tJQsIF0WdKrhJbw8WkL3YrJzg==}
     dependencies:
       node-gyp: 9.4.1
       tree-sitter: 0.21.1
-      tree-sitter-pug: 1.0.11(tree-sitter@0.21.1)
+      tree-sitter-pug: 1.0.12(tree-sitter@0.21.1)
     transitivePeerDependencies:
       - bluebird
       - supports-color
-      - tree_sitter
     dev: false
 
-  /pugjs-angular-language-service@18.2.5-a:
-    resolution: {integrity: sha512-vYEJbH///wNZQ18rtVBjxTaUVQNtmZXSwZnNRf7AqFxmYjPoiRaUMMhfB9ommcNhWggetINdLzg4pGoL1bHzvQ==}
+  /pugjs-angular-language-service@18.2.5-b:
+    resolution: {integrity: sha512-MAdBQyAaDdKpKiohSJW2XZXFPTmBtnX2O6lfDAPngj6Zn3fxGN6xeuNaP2KZm63fI7vrA5k8tIGp98Do+/UGAQ==}
     engines: {node: ^18.19.1 || ^20.11.1 || >=22.0.0}
     dev: false
 
@@ -8997,18 +8992,17 @@ packages:
     hasBin: true
     dev: true
 
-  /tree-sitter-pug@1.0.11(tree-sitter@0.21.1):
-    resolution: {integrity: sha512-cVf9ho6fjphzqjCy0/+XRatgjqi0hBgG6XXWiLWn8xrY4vorxrKXKMu5Hi2ynh1hvjjYO9lp4Tot5qFp04w1DA==}
+  /tree-sitter-pug@1.0.12(tree-sitter@0.21.1):
+    resolution: {integrity: sha512-q1PVopWSO4Tl4aw9WbPs5mnotOeT7l6eC4v9kU6JPu22qwh+dnPVRv5erYqtnDiY3yiXH1fqeTyrf4qtJjTyHA==}
     requiresBuild: true
     peerDependencies:
-      tree-sitter: ^0.21.0
-      tree_sitter: '*'
+      tree-sitter: ^0.21.1
     peerDependenciesMeta:
-      tree_sitter:
+      tree-sitter:
         optional: true
     dependencies:
-      node-addon-api: 7.1.1
-      node-gyp-build: 4.8.2
+      node-addon-api: 8.3.1
+      node-gyp-build: 4.8.4
       tree-sitter: 0.21.1
     dev: false
 
@@ -9016,8 +9010,8 @@ packages:
     resolution: {integrity: sha512-7dxoA6kYvtgWw80265MyqJlkRl4yawIjO7S5MigytjELkX43fV2WsAXzsNfO7sBpPPCF5Gp0+XzHk0DwLCq3xQ==}
     requiresBuild: true
     dependencies:
-      node-addon-api: 8.1.0
-      node-gyp-build: 4.8.2
+      node-addon-api: 8.3.1
+      node-gyp-build: 4.8.4
     dev: false
 
   /true-case-path@2.2.1:
