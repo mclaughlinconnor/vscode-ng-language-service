@@ -1,9 +1,9 @@
 {
-  "name": "ng-template",
+  "name": "pug-ng-template",
   "displayName": "Pug Angular Language Service",
   "description": "Editor services for Angular templates written in Pug",
   "version": "18.2.0",
-  "publisher": "Angular",
+  "publisher": "mclaughlinconnor",
   "icon": "angular.png",
   "license": "MIT",
   "keywords": [
