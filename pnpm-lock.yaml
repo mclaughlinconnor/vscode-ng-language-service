@@ -6794,7 +6794,6 @@ packages:
 
   /npx@10.2.2:
     resolution: {integrity: sha512-eImmySusyeWphzs5iNh791XbZnZG0FSNvM4KSah34pdQQIDsdTDhIwg1sjN3AIVcjGLpbQ/YcfqHPshKZQK1fA==}
-    deprecated: This package is now part of the npm CLI.
     hasBin: true
     dev: false
     bundledDependencies:
