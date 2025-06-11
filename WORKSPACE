@@ -186,7 +186,6 @@ npm_translate_lock(
       "minipass-fetch@3.0.5": [""],
       "minipass-flush@1.0.5": [""],
       "minipass-pipeline@1.2.4": [""],
-      "minipass-sized@1.0.3": [""],
       "minipass@7.1.2": [""],
       "minizlib@3.0.2": [""],
       "mkdirp@1.0.4": [""],
