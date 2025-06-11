@@ -7,7 +7,7 @@ settings:
 overrides:
   '@angular/compiler-cli': npm:pugjs-angular-cli@18.2.5-a
   '@electron/node-gyp': 10.2.0-electron.1
-  fs-minipass: 2.1.0
+  fs-minipass: 3.0.3
   glob: 8.1.0
   make-fetch-happen: 11.1.1
   mimic-response: 3.1.0
@@ -3183,7 +3183,7 @@ packages:
       '@npmcli/fs': 2.1.2
       '@npmcli/move-file': 2.0.1
       chownr: 2.0.0
-      fs-minipass: 2.1.0
+      fs-minipass: 3.0.3
       glob: 8.1.0
       infer-owner: 1.0.4
       lru-cache: 7.18.3
@@ -3207,7 +3207,7 @@ packages:
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
       '@npmcli/fs': 3.1.1
-      fs-minipass: 2.1.0
+      fs-minipass: 3.0.3
       glob: 8.1.0
       lru-cache: 7.18.3
       minipass: 7.1.2
@@ -5012,9 +5012,9 @@ packages:
       universalify: 0.1.2
     dev: true
 
-  /fs-minipass@2.1.0:
-    resolution: {integrity: sha512-V/JgOLFCS+R6Vcq0slCuaeWEdNC3ouDlJMNIsacH2VtALiu9mV4LPrHc5cDl8k5aw6J8jwgWWpiTo5RYhmIzvg==}
-    engines: {node: '>= 8'}
+  /fs-minipass@3.0.3:
+    resolution: {integrity: sha512-XUBA9XClHbnJWSfBzjkm6RvPsyg3sryZt06BEQoXcF7EK/xpGaQYJgQKDJSUH5SGZ76Y7pFx1QBnXz09rU5Fbw==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
     dependencies:
       minipass: 7.1.2
 
@@ -8594,7 +8594,7 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       chownr: 2.0.0
-      fs-minipass: 2.1.0
+      fs-minipass: 3.0.3
       minipass: 7.1.2
       minizlib: 3.0.2
       mkdirp: 1.0.4

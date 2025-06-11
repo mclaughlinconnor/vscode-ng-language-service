@@ -137,7 +137,7 @@ npm_translate_lock(
       "es-object-atoms@1.1.1": [""],
       "escalade@3.2.0": [""],
       "exponential-backoff@3.1.2": [""],
-      "fs-minipass@2.1.0": [""],
+      "fs-minipass@3.0.3": [""],
       "fs.realpath@1.0.0": [""],
       "function-bind@1.1.2": [""],
       "get-caller-file@2.0.5": [""],
