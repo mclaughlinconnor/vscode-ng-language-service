@@ -2,7 +2,14 @@
 # Input hashes for repository rule npm_translate_lock(name = "npm", pnpm_lock = "//:pnpm-lock.yaml").
 # This file should be checked into version control along with the pnpm-lock.yaml file.
 .npmrc=974837034
-pnpm-lock.yaml=1169532050
-yarn.lock=-1606700817
-package.json=958369763
+pnpm-lock.yaml=-1622323994
+yarn.lock=-1293584261
+transform_package_json.js=1361863853
+package.json=-1703694266
 pnpm-workspace.yaml=1711114604
+.yarn/patches/minipass-flush-npm-1.0.5-efe79d9826.patch=1194627455
+.yarn/patches/minipass-sized-npm-1.0.3-306d86f432.patch=2128905854
+.yarn/patches/minipass-pipeline-npm-1.2.4-5924cb077f.patch=120297062
+patches/minipass-flush.patch=1194627455
+patches/minipass-pipeline.patch=120297062
+patches/minipass-sized.patch=2128905854

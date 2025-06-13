@@ -292,34 +292,51 @@
   "resolutions": {
     "@angular/compiler-cli": "npm:pugjs-angular-cli@18.2.5-a",
     "@electron/node-gyp": "10.2.0-electron.1",
+    "cacache": "19.0.1",
     "fs-minipass": "3.0.3",
     "glob": "8.1.0",
-    "make-fetch-happen": "10.2.1",
+    "make-fetch-happen": "14.0.3",
     "mimic-response": "3.1.0",
     "minimatch": "3.0.4",
-    "unique-filename": "1.1.1",
-    "unique-slug": "2.0.2",
     "minipass": "7.1.2",
+    "minipass-collect": "2.0.1",
+    "minipass-fetch": "4.0.1",
+    "minipass-flush@^1.0.5": "patch:minipass-flush@npm%3A1.0.5#./.yarn/patches/minipass-flush-npm-1.0.5-efe79d9826.patch",
+    "minipass-pipeline@^1.2.4": "patch:minipass-pipeline@npm%3A1.2.4#./.yarn/patches/minipass-pipeline-npm-1.2.4-5924cb077f.patch",
+    "minipass-sized@^1.0.3": "patch:minipass-sized@npm%3A1.0.3#./.yarn/patches/minipass-sized-npm-1.0.3-306d86f432.patch",
     "minizlib": "3.0.2",
     "once": "1.4.0",
     "proc-log": "2.0.1",
-    "retry": "0.13.1"
+    "retry": "0.13.1",
+    "tar": "7.4.3",
+    "unique-filename": "1.1.1",
+    "unique-slug": "2.0.2"
   },
   "overrides": {
     "@angular/compiler-cli": "npm:pugjs-angular-cli@18.2.5-a",
     "@electron/node-gyp": "10.2.0-electron.1",
+    "cacache": "19.0.1",
     "fs-minipass": "3.0.3",
     "glob": "8.1.0",
-    "make-fetch-happen": "10.2.1",
+    "make-fetch-happen": "14.0.3",
     "mimic-response": "3.1.0",
     "minimatch": "3.0.4",
-    "unique-filename": "1.1.1",
-    "unique-slug": "2.0.2",
     "minipass": "7.1.2",
+    "minipass-collect": "2.0.1",
+    "minipass-fetch": "4.0.1",
     "minizlib": "3.0.2",
     "once": "1.4.0",
     "proc-log": "2.0.1",
-    "retry": "0.13.1"
+    "retry": "0.13.1",
+    "tar": "7.4.3",
+    "unique-filename": "1.1.1",
+    "unique-slug": "2.0.2"
   },
-  "packageManager": "yarn@3.6.3"
+  "pnpm": {
+    "patchedDependencies": {
+      "minipass-flush@1.0.5": "patches/minipass-flush.patch",
+      "minipass-pipeline@1.2.4": "patches/minipass-pipeline.patch",
+      "minipass-sized@1.0.3": "patches/minipass-sized.patch"
+    }
+  }
 }
